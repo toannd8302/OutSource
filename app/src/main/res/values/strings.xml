@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">Exagen</string>
+    <string name="google_web_client_id">667880203650-orctcr7e86inlljouvddkkcrg140eviv.apps.googleusercontent.com</string>
+    <string-array name="answer_choosing">
+        <item>A</item>
+        <item>B</item>
+        <item>C</item>
+        <item>D</item>
+    </string-array>
+</resources>

@@ -1,0 +1,34 @@
+{
+  "project_info": {
+    "project_number": "667880203650",
+    "project_id": "capstonesp2024",
+    "storage_bucket": "capstonesp2024.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:667880203650:android:d6e710c65cd474bee81b9b",
+        "android_client_info": {
+          "package_name": "fpt.edu.vn.exagen"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAm9nD9Qq8yUkr6fJKlRZrEY2mPBBkRFes"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "667880203650-0icj901j2lp1unekroc85njlafedhhhh.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

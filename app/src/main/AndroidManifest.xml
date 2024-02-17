@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+    <uses-feature android:name="android.hardware.camera" />
+    <uses-feature android:name="android.hardware.camera.autofocus" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <application
+        android:allowBackup="true"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:fullBackupContent="@xml/backup_rules"
+        android:icon="@drawable/big_logo_cutted"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.Exagen"
+        tools:targetApi="31">
+        <activity
+            android:name=".LoginActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".Teachers.ResultActivity"
+            android:exported="true"/>
+        <activity
+        android:name=".Teachers.StudentListActivity"
+        android:exported="true"/>
+        <activity
+            android:name=".Teachers.TeacherMainActivity"
+            android:label="Teacher Main Activity"
+            android:exported="true"/>
+        <activity
+            android:name=".Teachers.ScanExamActivity"
+            android:label="Scan Activity"
+            android:exported="true"/>
+        <activity
+            android:name=".Teachers.CreateExamActivity"
+            android:exported="true"/>
+        <activity android:name=".Students.ImageDisplayActivity"
+            android:exported="true"/>
+
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="fpt.edu.vn.exagen.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths"/>
+        </provider>
+
+
+    </application>
+
+</manifest>

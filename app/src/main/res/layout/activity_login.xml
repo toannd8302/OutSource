@@ -1,0 +1,102 @@
+<androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mobile_login"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_centerVertical="true"
+    android:background="@drawable/background_linear_gradient"
+    android:clipToOutline="true"
+    android:orientation="vertical">
+
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="match_parent"
+
+        android:layout_height="match_parent"
+
+        app:strokeColor="@color/edtext_background">
+
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+
+            android:background="@drawable/background_linear_gradient"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <ImageView
+                android:id="@+id/imageViewLogo"
+                android:layout_width="200dp"
+                android:layout_height="167dp"
+                android:layout_gravity="center"
+                android:layout_marginTop="32dp"
+                android:layout_marginBottom="30dp"
+                android:src="@drawable/logo"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/editTextEmail"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="30dp"
+                    android:background="@drawable/edt_custom"
+                    android:drawableStart="@drawable/baseline_person_outline_24"
+                    android:drawablePadding="8dp"
+                    android:hint="Email của bạn..."
+                    android:inputType="textEmailAddress"
+                    android:textColor="@color/textColor" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:counterEnabled="true"
+                app:counterMaxLength="6"
+                android:orientation="horizontal"
+            >
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/editTextTestCode"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/edt_custom"
+                    android:drawableStart="@drawable/baseline_lock_24"
+
+                    android:drawablePadding="8dp"
+                    android:hint="Mã phòng thi của bạn..."
+                    android:inputType="number"
+                    android:maxLength="6"
+                    android:paddingHorizontal="8dp" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnStartExam"
+                android:layout_width="match_parent"
+                android:textColor="@color/textColor"
+                android:layout_height="wrap_content"
+                android:backgroundTint="@color/white"
+                android:layout_centerHorizontal="true"
+                android:padding="4dp"
+                android:scaleType="fitCenter"
+                android:text="Bắt đầu chấm bài"
+                android:textSize="24sp"
+                tools:ignore="SpeakableTextPresentCheck" />
+
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
+    </com.google.android.material.card.MaterialCardView>
+    <!-- ImageView cho EditTextTestCode -->
+
+    <!-- EditText cho TestCode -->
+
+    <!-- ImageView cho EditTextEmail -->
+
+
+</androidx.appcompat.widget.LinearLayoutCompat>

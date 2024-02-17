@@ -1,0 +1,131 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".Teachers.ScanExamFragment">
+
+    <!-- Header -->
+    <LinearLayout
+        android:id="@+id/header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="#375BDC"
+        android:padding="16dp">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Danh sách đề thi"
+                android:textColor="@android:color/white"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+
+            <!-- ImageButton in the header -->
+            <ImageButton
+                android:id="@+id/btnCreateFolder"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentTop="true"
+                android:layout_marginEnd="8dp"
+                android:src="@drawable/more"
+                android:background="#375BDC"
+                android:scaleType="centerInside" />
+        </RelativeLayout>
+    </LinearLayout>
+
+    <!-- ImageButton nằm ở phía dưới header -->
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/header"
+    android:layout_centerHorizontal="true"
+    android:layout_marginTop="20dp"
+    android:orientation="vertical">
+
+        <ImageButton
+            android:id="@+id/btnShare"
+            android:layout_width="449dp"
+            android:layout_height="match_parent"
+            android:adjustViewBounds="true"
+            android:background="?android:attr/selectableItemBackground"
+            android:scaleType="fitCenter"
+            app:srcCompat="@drawable/share"
+            />
+</LinearLayout>
+
+    <!-- Footer -->
+<LinearLayout
+android:id="@+id/footer"
+android:layout_width="match_parent"
+android:layout_height="50dp"
+android:orientation="horizontal"
+android:layout_alignParentBottom="true"
+android:background="#375BDC">
+
+<!-- ImageButton đầu tiên (ic_notification) -->
+<ImageButton
+    android:id="@+id/btnNotifications"
+    android:layout_width="0dp"
+    android:layout_height="match_parent"
+    android:layout_weight="1"
+    android:layout_gravity="center_vertical"
+    android:layout_marginRight="8dp"
+    android:src="@drawable/ic_notification"
+    android:background="?android:attr/selectableItemBackground"
+    android:scaleType="fitCenter"
+    android:adjustViewBounds="true" />
+
+<!-- Quét Đề Thi ImageButton -->
+<ImageButton
+    android:id="@+id/btnScanExam"
+    android:layout_width="0dp"
+    android:layout_height="match_parent"
+    android:layout_weight="1"
+    android:src="@drawable/scan"
+    android:background="?android:attr/selectableItemBackground"
+    android:scaleType="fitCenter"
+    android:adjustViewBounds="true" />
+
+<!-- ImageButton thứ hai (ic_user) -->
+<ImageButton
+    android:id="@+id/btnAccount"
+    android:layout_width="0dp"
+    android:layout_height="match_parent"
+    android:layout_gravity="center_vertical"
+    android:layout_marginLeft="8dp"
+    android:layout_weight="1"
+    android:background="?android:attr/selectableItemBackground"
+    android:src="@drawable/ic_user"
+    android:scaleType="fitCenter"
+    android:adjustViewBounds="true" />
+</LinearLayout>
+
+    <!-- ImageButton nằm ở phía trên footer -->
+<LinearLayout
+android:layout_width="wrap_content"
+android:layout_height="wrap_content"
+android:layout_above="@+id/footer"
+android:layout_alignParentEnd="true"
+android:layout_marginEnd="30dp"
+android:layout_marginBottom="30dp"
+android:gravity="end|bottom"
+android:orientation="vertical">
+
+<ImageButton
+    android:id="@+id/btnAddExam"
+    android:layout_width="80dp"
+    android:layout_height="80dp"
+    android:adjustViewBounds="true"
+    android:background="?android:attr/selectableItemBackground"
+    android:scaleType="fitCenter"
+    android:src="@drawable/plus" />
+</LinearLayout>
+
+    </RelativeLayout>

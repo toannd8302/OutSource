@@ -1,0 +1,64 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp">
+
+    <!-- Toolbar/Header -->
+
+    <ImageButton
+        android:id="@+id/btnBack"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:src="@drawable/back"
+        android:contentDescription="Back"
+        android:onClick="onBackButtonClick"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_gravity="start|center_vertical"
+        />
+
+    <TextView
+        android:id="@+id/tvHeader"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="Chọn hình thức tạo đề"
+        android:textColor="@android:color/white"
+        android:textSize="20sp"
+        android:textStyle="bold" />
+
+    <!-- Icon -->
+
+    <!-- Image Button -->
+    <ImageButton
+        android:id="@+id/btnScanNewExam"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="0dp"
+        android:scaleType="fitCenter"
+        android:src="@drawable/scanexam" />
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/btnScanNewExam"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp">
+
+        <ImageView
+            android:id="@+id/base64image"
+            android:layout_width="800px"
+            android:layout_height="3756px"
+            android:layout_centerVertical="true"/>
+
+        <TextView
+            android:id="@+id/textViewResponse"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toEndOf="@id/base64image"
+            android:layout_marginStart="16dp"/>
+
+    </RelativeLayout>
+</RelativeLayout>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="btnLogin">#1E57AE</color>
+    <color name="edtext_background">#66D9D9D9</color>
+    <color name="studentName">#CC10B981</color>
+    <color name="textColor">#003957</color>
+    <color name="backgroundButton">#00C886</color>
+    <color name="backgroundCardView">#B7B7B7</color>
+</resources>
