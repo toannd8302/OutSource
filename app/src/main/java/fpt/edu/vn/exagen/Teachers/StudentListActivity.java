@@ -10,6 +10,7 @@ import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -52,7 +53,7 @@ public class StudentListActivity extends AppCompatActivity {
     private static final int DISPLAY_IMAGE_REQUEST_CODE = 102;
 
     private TextView headerTextView;
-    private ImageButton exitButton;
+    private Button exitButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

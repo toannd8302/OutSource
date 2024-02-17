@@ -47,7 +47,7 @@ public class StudentListAdapter extends ArrayAdapter<StudentInfo> {
     // Tạo một SpannableString để đặt màu sắc cho "Tên HS"
         SpannableString spannableStringName = new SpannableString(studentName);
     // Đặt màu xanh lá cho văn bản của "Tên HS"
-        spannableStringName.setSpan(new ForegroundColorSpan(ContextCompat.getColor(context, R.color.textColor)),
+        spannableStringName.setSpan(new ForegroundColorSpan(ContextCompat.getColor(context, R.color.studentName)),
                 0, studentName.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 
     // Tạo một SpannableString để đặt màu sắc cho "Mã HS"
