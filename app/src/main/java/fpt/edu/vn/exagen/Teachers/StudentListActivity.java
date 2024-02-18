@@ -193,9 +193,9 @@ public class StudentListActivity extends AppCompatActivity {
     }
 
     private void displayCapturedImage(File imageFile) {
-        Intent displayImageIntent = new Intent(this, ImageDisplayActivity.class);
+        Intent displayImageIntent = new Intent(this, ImageHandlingActivity.class);
         displayImageIntent.putExtra(ImageDisplayActivity.EXTRA_IMAGE_PATH, imageFile.getAbsolutePath());
-        startActivityForResult(displayImageIntent, DISPLAY_IMAGE_REQUEST_CODE);
+        startActivity(displayImageIntent);
     }
 
     private void showExitConfirmationDialog() {
@@ -219,4 +219,7 @@ public class StudentListActivity extends AppCompatActivity {
         startActivity(intent);
         finish();
     }
+
+
+
 }

@@ -2,9 +2,11 @@ package fpt.edu.vn.exagen.Students;
 
 
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.widget.Button;
 import android.widget.ImageView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -12,10 +14,12 @@ import androidx.appcompat.app.AppCompatActivity;
 import java.io.File;
 
 import fpt.edu.vn.exagen.R;
+import fpt.edu.vn.exagen.Teachers.ImageHandlingActivity;
 
 public class ImageDisplayActivity extends AppCompatActivity {
     public static final String EXTRA_IMAGE_PATH = "extra_image_path";
     private ImageView imageView;
+    private Button acceptButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,6 +30,13 @@ public class ImageDisplayActivity extends AppCompatActivity {
         String imagePath = getIntent().getStringExtra(EXTRA_IMAGE_PATH);
         // Hiển thị hình ảnh trên ImageView
         displayImage(imagePath);
+        acceptButton = findViewById(R.id.acceptButton);
+        acceptButton.setOnClickListener(v -> {
+            // Xử lý khi người dùng chấp nhận hình ảnh
+            Intent intent = new Intent(this, ImageHandlingActivity.class);
+            intent.putExtra(ImageDisplayActivity.EXTRA_IMAGE_PATH, imagePath);
+            startActivity(intent);
+        });
     }
 
     private void displayImage(String imagePath) {

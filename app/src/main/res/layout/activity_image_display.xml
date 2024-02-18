@@ -11,5 +11,14 @@
         android:layout_height="match_parent"
         android:scaleType="centerInside"
         android:adjustViewBounds="true"/>
-
+<Button
+    android:id="@+id/acceptButton"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:text="xác nhận"
+    android:background="@color/btnLogin"
+    android:textColor="@color/white"
+    android:layout_alignParentBottom="true"
+    android:layout_margin="10dp"
+    />
 </RelativeLayout>

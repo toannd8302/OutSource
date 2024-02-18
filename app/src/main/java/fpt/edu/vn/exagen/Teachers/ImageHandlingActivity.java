@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -25,6 +26,7 @@ import java.io.IOException;
 import fpt.edu.vn.exagen.APIService.ApiInterface;
 import fpt.edu.vn.exagen.APIService.ApiResponse;
 import fpt.edu.vn.exagen.R;
+import fpt.edu.vn.exagen.Students.ImageDisplayActivity;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -46,10 +48,12 @@ public class ImageHandlingActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         if (intent != null) {
-            String imagePath = intent.getStringExtra("imagePath");
+            String imagePath = intent.getStringExtra(ImageDisplayActivity.EXTRA_IMAGE_PATH);
             if (imagePath != null) {
                 // Hiển thị ảnh và base64Image trong ImageHandlingActivity
                 displayImageAndBase64(imagePath);
+            }else {
+                Toast.makeText(this, "ImagePath rỗng", Toast.LENGTH_SHORT).show();
             }
         }
     }
@@ -65,6 +69,8 @@ public class ImageHandlingActivity extends AppCompatActivity {
 
             // Gửi yêu cầu đến API
             sendRequestToApi(base64Image);
+        }else {
+            Toast.makeText(this, "imagePath không tồn tại", Toast.LENGTH_SHORT).show();
         }
     }
 

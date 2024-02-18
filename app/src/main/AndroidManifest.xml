@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
+
     <uses-feature android:name="android.hardware.camera" />
     <uses-feature android:name="android.hardware.camera.autofocus" />
+
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
@@ -29,23 +31,28 @@
         </activity>
         <activity
             android:name=".Teachers.ResultActivity"
-            android:exported="true"/>
+            android:exported="true" />
         <activity
-        android:name=".Teachers.StudentListActivity"
-        android:exported="true"/>
+            android:name=".Teachers.StudentListActivity"
+            android:exported="true" />
         <activity
             android:name=".Teachers.TeacherMainActivity"
-            android:label="Teacher Main Activity"
-            android:exported="true"/>
+            android:exported="true"
+            android:label="Teacher Main Activity" />
         <activity
             android:name=".Teachers.ScanExamActivity"
-            android:label="Scan Activity"
-            android:exported="true"/>
+            android:exported="true"
+            android:label="Scan Activity" />
         <activity
             android:name=".Teachers.CreateExamActivity"
-            android:exported="true"/>
-        <activity android:name=".Students.ImageDisplayActivity"
-            android:exported="true"/>
+            android:exported="true" />
+        <activity
+            android:name=".Students.ImageDisplayActivity"
+            android:exported="true" />
+        <activity
+            android:name=".Teachers.ImageHandlingActivity"
+            android:exported="true" />
+        />
 
         <provider
             android:name="androidx.core.content.FileProvider"
@@ -54,7 +61,7 @@
             android:grantUriPermissions="true">
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/file_paths"/>
+                android:resource="@xml/file_paths" />
         </provider>
 
 
