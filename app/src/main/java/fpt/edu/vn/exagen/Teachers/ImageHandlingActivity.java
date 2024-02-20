@@ -25,6 +25,7 @@ import java.io.IOException;
 
 import fpt.edu.vn.exagen.APIService.ApiInterface;
 import fpt.edu.vn.exagen.APIService.ApiResponse;
+import fpt.edu.vn.exagen.APIService.RetrofitClient;
 import fpt.edu.vn.exagen.R;
 import fpt.edu.vn.exagen.Students.ImageDisplayActivity;
 import retrofit2.Call;
@@ -36,7 +37,11 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class ImageHandlingActivity extends AppCompatActivity {
 
     private ImageView imageView;
-    private TextView textViewBase64;
+    //private TextView textViewBase64;
+
+    private ImageView imageViewResponse;
+
+    //private TextView textViewResponseBase64;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -44,7 +49,8 @@ public class ImageHandlingActivity extends AppCompatActivity {
         setContentView(R.layout.activity_image_handling);
 
         imageView = findViewById(R.id.imageView);
-        textViewBase64 = findViewById(R.id.textViewBase64);
+        //textViewBase64 = findViewById(R.id.textViewBase64);
+        imageViewResponse = findViewById(R.id.imageViewResponse);
 
         Intent intent = getIntent();
         if (intent != null) {
@@ -52,7 +58,7 @@ public class ImageHandlingActivity extends AppCompatActivity {
             if (imagePath != null) {
                 // Hiển thị ảnh và base64Image trong ImageHandlingActivity
                 displayImageAndBase64(imagePath);
-            }else {
+            } else {
                 Toast.makeText(this, "ImagePath rỗng", Toast.LENGTH_SHORT).show();
             }
         }
@@ -62,23 +68,31 @@ public class ImageHandlingActivity extends AppCompatActivity {
         File imgFile = new File(imagePath);
         if (imgFile.exists()) {
             Bitmap myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
-            imageView.setImageBitmap(myBitmap);
 
+
+            //Ma hoa anh thanh base64
             String base64Image = encodeImageToBase64(myBitmap);
-            textViewBase64.setText(base64Image);
+
 
             // Gửi yêu cầu đến API
             sendRequestToApi(base64Image);
-        }else {
+        } else {
             Toast.makeText(this, "imagePath không tồn tại", Toast.LENGTH_SHORT).show();
         }
     }
 
+    //Ma hoa  anh base64
     private String encodeImageToBase64(Bitmap bitmap) {
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
         byte[] byteArray = byteArrayOutputStream.toByteArray();
         return Base64.encodeToString(byteArray, Base64.DEFAULT);
+    }
+
+    //Giải mã base64Image thành ảnh từ API
+    private Bitmap decodeBase64ToImage(String base64Image) {
+        byte[] decodedString = Base64.decode(base64Image, Base64.DEFAULT);
+        return BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
     }
 
     private void sendRequestToApi(String base64Image) {
@@ -90,15 +104,10 @@ public class ImageHandlingActivity extends AppCompatActivity {
         Log.d("API Request", "Request Data: " + jsonObject.toString());
 
         // Sử dụng Retrofit để gửi yêu cầu POST đến API
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("https://exagen.azurewebsites.net/")
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-
-        ApiInterface apiService = retrofit.create(ApiInterface.class);
+        ApiInterface apiInterface = RetrofitClient.getClient().create(ApiInterface.class);
 
         // Truyền JsonObject thay vì RequestBody
-        Call<ApiResponse> call = apiService.sendImage(jsonObject);
+        Call<ApiResponse> call = apiInterface.sendImage(jsonObject);
 
         call.enqueue(new Callback<ApiResponse>() {
             @Override
@@ -128,8 +137,24 @@ public class ImageHandlingActivity extends AppCompatActivity {
         if (response.isSuccessful()) {
             // Xử lý kết quả thành công
             ApiResponse apiResponse = response.body();
+            Log.d("API Response", "Response Data Base64Image: " + apiResponse.getBase64Image());
+            Log.d("API Response", "Response Data Result String: " + apiResponse.getResultString());
             if (apiResponse != null) {
-                return apiResponse;
+                // Giải mã base64Image thành ảnh và hiển thị ảnh
+                Bitmap bitmap = decodeBase64ToImage(apiResponse.getBase64Image());
+
+            // width
+                int newWidth = bitmap.getWidth()*4;
+                // height
+                int newHeight = bitmap.getHeight()*4;
+
+
+
+            // Tạo một bitmap mới có kích thước mới
+                Bitmap scaledBitmap = Bitmap.createScaledBitmap(bitmap, newWidth, newHeight, true);
+
+            // Đặt bitmap mới vào ImageView
+                imageViewResponse.setImageBitmap(scaledBitmap);
             }
         } else {
             // Xử lý kết quả lỗi
@@ -144,6 +169,7 @@ public class ImageHandlingActivity extends AppCompatActivity {
             if (errorResponse != null) {
                 String errorMessage = errorResponse.getResultString();
                 // Xử lý thông báo lỗi ở đây
+
             }
         }
 
