@@ -59,22 +59,6 @@ public class StudentListAdapter extends ArrayAdapter<StudentInfo> {
         studentInfoTextViewName.setText(spannableStringName);
         studentInfoTextViewNo.setText(spannableStringNo);
 
-
-        // Hiển thị checkbox
-        final CheckBox studentCheckBox = convertView.findViewById(R.id.studentCheckBox);
-
-        // Đặt trạng thái checkbox dựa trên dữ liệu
-        studentCheckBox.setChecked(studentInfo.isChecked());
-
-        // Đặt sự kiện click cho checkbox
-        studentCheckBox.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Cập nhật trạng thái của checkbox khi được nhấn
-                studentInfo.setChecked(studentCheckBox.isChecked());
-            }
-        });
-
         return convertView;
     }
 

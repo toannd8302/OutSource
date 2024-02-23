@@ -144,21 +144,13 @@ public class ImageHandlingActivity extends AppCompatActivity {
             // Gửi yêu cầu đến API
             sendRequestToApi(base64Image);
 
-            //Xử lý sự kiện khi nhấn nút Luu
+
             btnSubmit.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    // Gửi kết quả từ Spinner đến API
-                    // Lấy đáp án từ Spinner
-//                    String answer = spAnswers.getSelectedItem().toString();
-//                    Log.d("Answer", "Answer: " + answer);
-//                    // Gửi kết quả đến API
-//                    sendResultToApi(answer);
                     Toast.makeText(ImageHandlingActivity.this, "Kết quả đã được gửi", Toast.LENGTH_SHORT).show();
                 }
             });
-
-
         } else {
             Toast.makeText(this, "imagePath không tồn tại", Toast.LENGTH_SHORT).show();
         }
@@ -180,7 +172,6 @@ public class ImageHandlingActivity extends AppCompatActivity {
         byte[] decodedString = Base64.decode(base64Image, Base64.DEFAULT);
         return BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
     }
-
     private void sendRequestToApi(String base64Image) {
         // Tạo JSON Object để chứa dữ liệu Base64
         JsonObject jsonObject = new JsonObject();
@@ -206,9 +197,7 @@ public class ImageHandlingActivity extends AppCompatActivity {
                     throw new RuntimeException(e);
                 }
 
-                // Xử lý ApiResponse ở đây (nếu cần)
             }
-
             @Override
             public void onFailure(Call<ApiResponse> call, Throwable t) {
                 // Xử lý lỗi gửi yêu cầu
@@ -216,7 +205,6 @@ public class ImageHandlingActivity extends AppCompatActivity {
             }
         });
     }
-
     private ApiResponse handleResponse(Response<ApiResponse> response) throws IOException {
         Log.d("API Response", "Response Code: " + response.code());
 
@@ -232,18 +220,16 @@ public class ImageHandlingActivity extends AppCompatActivity {
                 // Giải mã base64Image thành ảnh và hiển thị ảnh
                 Bitmap bitmap = decodeBase64ToImage(apiResponse.getBase64Image());
 
-                // width
+
                 int newWidth = bitmap.getWidth() * 3;
-                // height
+
                 int newHeight = bitmap.getHeight() * 3;
 
-
-                // Tạo một bitmap mới có kích thước mới
+                // Set up lại hình có kích thước mới
                 scaledBitmap = Bitmap.createScaledBitmap(bitmap, newWidth, newHeight, true);
                 receivedBitmap = scaledBitmap;
                 imageViewResponse.setImageBitmap(scaledBitmap);
                 displayImageViewAndSpinner();
-
             }
         } else {
             // Xử lý kết quả lỗi
@@ -263,7 +249,6 @@ public class ImageHandlingActivity extends AppCompatActivity {
         }
         return null;
     }
-
     private void displayImageViewAndSpinner() {
         // Xử lý chuỗi kết quả từ API
         ArrayList<Object[]> answers = stringProcessing(resultStringResponse);
@@ -272,59 +257,42 @@ public class ImageHandlingActivity extends AppCompatActivity {
             numberString.add((Integer) answer[0]);
             Log.d("NumberString", "NumberString: " + numberString);
 
-            // Lấy ký tự đầu tiên của phần tử thứ hai của mảng
             char firstChar = answer[1].toString().charAt(0);
             Log.d("FirstChar", "FirstChar: " + firstChar);
             itemsAnswers.add(firstChar);
         }
-        // Khởi tạo ConstraintLayout
         ConstraintLayout constraintLayout = findViewById(R.id.parentLayout);
-
         // Tạo LinearLayout mới để chứa các cặp TextView và Spinner
         LinearLayout llMain = findViewById(R.id.llMain);
         llMain.setOrientation(LinearLayout.VERTICAL);
-
-        // Tạo ImageView mới từ mã Java
         ImageView imageView = findViewById(R.id.imageViewResponse);
-        imageView.setImageBitmap(receivedBitmap); // Đặt ảnh của ImageView
-
-
-
-
+        imageView.setImageBitmap(receivedBitmap);
         for (int i = 0; i < numberString.size(); i++) {
             // Tạo một LinearLayout mới để chứa mỗi cặp TextView và Spinner
             LinearLayout rowLayout = new LinearLayout(this);
             rowLayout.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
             rowLayout.setOrientation(LinearLayout.HORIZONTAL);
             LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
-                    LinearLayout.LayoutParams.MATCH_PARENT, // width
-                    LinearLayout.LayoutParams.WRAP_CONTENT  // height
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT
             );
             // Thiết lập margin cho LinearLayout
-            int leftMargin = 20; // margin bên trái
-            int topMargin = 10; // margin phía trên
-            int rightMargin = 20; // margin bên phải
-            int bottomMargin = 10; // margin phía dưới
+            int leftMargin = 20;
+            int topMargin = 10;
+            int rightMargin = 20;
+            int bottomMargin = 10;
             layoutParams.setMargins(leftMargin, topMargin, rightMargin, bottomMargin);
-            // Gán LayoutParams cho LinearLayout
             rowLayout.setLayoutParams(layoutParams);
-            // Tạo một TextView mới
             TextView textView = new TextView(this);
             textView.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
             textView.setPadding(10, 0, 10, 0);
             textView.setText(String.valueOf(i + 1) + ".");
-
             rowLayout.addView(textView);
-            // Tạo một TextView mới
             TextView textView1 = new TextView(this);
             textView1.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
             textView1.setPadding(10, 0, 10, 0);
             textView1.setText(itemsAnswers.get(i).toString());
-
             rowLayout.addView(textView1);
-
-
-
             // Thêm LinearLayout vào LinearLayout chứa các cặp TextView và Spinner
             llMain.addView(rowLayout);
         }
@@ -332,21 +300,13 @@ public class ImageHandlingActivity extends AppCompatActivity {
 
     private static ArrayList<Object[]> stringProcessing(String resultStringResponse) {
         String[] parts = resultStringResponse.split("\\|");
-
-        // Tạo danh sách ArrayList để lưu trữ các mảng chuỗi kí tự và số nguyên
         ArrayList<Object[]> arraysList = new ArrayList<>();
 
-        // Lặp qua từng phần và chia thành các chuỗi kí tự đơn lẻ
         for (String part : parts) {
-            // Tạo một mảng con từ phần tử
             String[] subParts = part.split(":");
-
-            // Lấy ký tự đầu tiên của phần tử thứ hai nếu có
             char character = subParts.length > 1 ? subParts[1].charAt(0) : 'A';
-
-            // Kiểm tra độ dài của mảng con trước khi truy cập
             if (subParts.length > 1) {
-                // Nếu mảng có ít nhất 2 phần tử, thêm mảng con vào danh sách
+
                 arraysList.add(new Object[]{Integer.parseInt(subParts[0]), character});
             } else {
                 // Nếu mảng chỉ có 1 phần tử hoặc không có phần tử nào, thêm một phần tử mới có giá trị mặc định "A"
@@ -355,7 +315,4 @@ public class ImageHandlingActivity extends AppCompatActivity {
         }
         return arraysList;
     }
-
-
-
 }
