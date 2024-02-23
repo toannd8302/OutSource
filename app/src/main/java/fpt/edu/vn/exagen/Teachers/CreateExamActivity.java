@@ -1,13 +1,10 @@
 package fpt.edu.vn.exagen.Teachers;
 
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.provider.MediaStore;
 import android.util.Base64;
 import android.util.Log;
 import android.view.View;
@@ -15,18 +12,13 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.FileProvider;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 import fpt.edu.vn.exagen.APIService.ApiInterface;
 import fpt.edu.vn.exagen.APIService.ApiResponse;
@@ -54,7 +46,7 @@ public class CreateExamActivity extends AppCompatActivity {
         setContentView(R.layout.create_exam_layout);
 
 
-        btnBack = findViewById(R.id.btnBack);
+        btnBack = findViewById(R.id.btnBackCam);
         btnScanNewExam = findViewById(R.id.btnScanNewExam);
         base64image = findViewById(R.id.base64image);
         textViewResponse = findViewById(R.id.textViewResponse);

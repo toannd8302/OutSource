@@ -2,7 +2,11 @@ package fpt.edu.vn.exagen.Students;
 
 import com.google.gson.annotations.SerializedName;
 
-public class StudentInfo {
+import java.io.Serializable;
+
+public class StudentInfo implements Serializable {
+    @SerializedName("examMarkId")
+    private String examMarkId;
     @SerializedName("studentId")
     private String studentId;
 
@@ -15,11 +19,12 @@ public class StudentInfo {
     @SerializedName("no")
     private int no;
 
-    public StudentInfo(String studentId, String studentName, String mark, int no) {
+    public StudentInfo(String studentId, String studentName, String mark, int no, String examMarkId) {
         this.studentId = studentId;
         this.studentName = studentName;
         this.mark = mark;
         this.no = no;
+        this.examMarkId = examMarkId;
     }
     private boolean isChecked;
 
@@ -49,4 +54,10 @@ public class StudentInfo {
     public void setNo(int no) {
         this.no = no;
     }
+
+    public String getExamMarkId() {
+        return examMarkId;
+    }
+
+
 }

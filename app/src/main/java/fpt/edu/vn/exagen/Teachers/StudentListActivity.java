@@ -1,4 +1,5 @@
 package fpt.edu.vn.exagen.Teachers;
+
 import android.Manifest;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -6,6 +7,7 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
@@ -26,6 +28,7 @@ import androidx.core.content.ContextCompat;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.List;
 
 import fpt.edu.vn.exagen.APIService.ApiInterface;
@@ -47,6 +50,10 @@ public class StudentListActivity extends AppCompatActivity {
     private String examCode;
     private String email;
     private String testDescription;
+    private String studentName; // Tên học sinh được chọn truyền qua activity ImageHandlingActivity
+    private String examMarkId; // ID của bài thi được chọn truyền qua activity ImageHandlingActivity
+
+    private String studentId; // ID của học sinh được chọn truyền qua activity ImageHandlingActivity
 
     private static final int CAMERA_PERMISSION_REQUEST_CODE = 100;
     private static final int CAMERA_REQUEST_CODE = 101;
@@ -80,6 +87,8 @@ public class StudentListActivity extends AppCompatActivity {
                         StudentInfoApiResponse studentInfoApiResponse = response.body();
                         List<StudentInfo> studentList = studentInfoApiResponse.getStudentInExam();
                         testDescription = studentInfoApiResponse.getDescriptionOfTest();
+
+
                         headerTextView.setText(testDescription);
 
                         showStudentList(studentList);
@@ -116,7 +125,13 @@ public class StudentListActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Log.d("StudentListActivity", "Item Clicked at position: " + position);
                 StudentInfo selectedStudent = studentList.get(position);
-                Toast.makeText(StudentListActivity.this, "Chọn học sinh: " + selectedStudent.getStudentName(), Toast.LENGTH_SHORT).show();
+                studentName = selectedStudent.getStudentName();
+                examMarkId = selectedStudent.getExamMarkId();
+                studentId = selectedStudent.getStudentId();
+                Intent intent = new Intent(StudentListActivity.this, ImageHandlingActivity.class);
+
+                Toast.makeText(StudentListActivity.this, "Chọn học sinh: " + studentName, Toast.LENGTH_SHORT).show();
+
 
                 checkCameraPermissionAndOpenCamera(selectedStudent);
             }
@@ -195,6 +210,18 @@ public class StudentListActivity extends AppCompatActivity {
     private void displayCapturedImage(File imageFile) {
         Intent displayImageIntent = new Intent(this, ImageHandlingActivity.class);
         displayImageIntent.putExtra(ImageDisplayActivity.EXTRA_IMAGE_PATH, imageFile.getAbsolutePath());
+        displayImageIntent.putExtra("examCode", examCode);
+        Log.d("StudentListActivity", "Exam Code: " + examCode);
+        displayImageIntent.putExtra("email", email);
+        Log.d("StudentListActivity", "Email: " + email);
+        displayImageIntent.putExtra("testDescription", testDescription);
+        Log.d("StudentListActivity", "Test Description: " + testDescription);
+        displayImageIntent.putExtra("studentName", studentName);
+        Log.d("StudentListActivity", "Student Name: " + studentName);
+        displayImageIntent.putExtra("examMarkId", examMarkId);
+        Log.d("StudentListActivity", "Exam Mark Id: " + examMarkId);
+        displayImageIntent.putExtra("studentId", studentId);
+        Log.d("StudentListActivity", "Student Id: " + studentId);
         startActivity(displayImageIntent);
     }
 
@@ -219,7 +246,6 @@ public class StudentListActivity extends AppCompatActivity {
         startActivity(intent);
         finish();
     }
-
 
 
 }
