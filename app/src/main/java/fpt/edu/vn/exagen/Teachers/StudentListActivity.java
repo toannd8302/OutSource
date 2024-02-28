@@ -13,8 +13,10 @@ import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.ImageButton;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -60,6 +62,7 @@ public class StudentListActivity extends AppCompatActivity {
     private static final int DISPLAY_IMAGE_REQUEST_CODE = 102;
 
     private TextView headerTextView;
+    private boolean stateColor = false;
     private Button exitButton;
 
     @Override
@@ -74,6 +77,8 @@ public class StudentListActivity extends AppCompatActivity {
         if (intent != null) {
             examCode = intent.getStringExtra("examCode");
             email = intent.getStringExtra("email");
+            stateColor = intent.getBooleanExtra("changeStateColor", false);
+            Log.d("StudentListActivity", "stateColor: " + stateColor);
 
             Log.d("StudentListActivity", "Test Code: " + examCode);
             Log.d("StudentListActivity", "Email: " + email);
@@ -118,7 +123,22 @@ public class StudentListActivity extends AppCompatActivity {
 
         StudentListAdapter adapter = new StudentListAdapter(this, studentList);
         listView.setAdapter(adapter);
-
+        if (stateColor) {
+           //Thqau màu cho relative layout
+            RelativeLayout relativeLayoutStudent = findViewById(R.id.relativeLayoutStudent);
+            // Kiểm tra xem relativeLayoutStudent không phải là null trước khi thiết lập màu nền
+            if (relativeLayoutStudent != null) {
+                relativeLayoutStudent.setBackgroundColor(getResources().getColor(R.color.backgroundButton));
+            } else {
+                Log.e("Error", "RelativeLayout is null");
+            }
+            CheckBox checkBox = findViewById(R.id.studentCheckBox);
+            if (checkBox != null) {
+                checkBox.setButtonDrawable(R.drawable.custom_checkbox);
+            } else {
+                Log.e("Error", "CheckBox is null");
+            }
+        }
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -132,7 +152,6 @@ public class StudentListActivity extends AppCompatActivity {
                 Log.d("StudentListActivity", "Student Id: " + studentId);
 
 
-
               //truyền dữ liệu qua activity ImageHandlingActivity
                     Intent intent = new Intent(StudentListActivity.this, ImageHandlingActivity.class);
                     intent.putExtra("studentName", studentName);
@@ -144,6 +163,48 @@ public class StudentListActivity extends AppCompatActivity {
 
                 Toast.makeText(StudentListActivity.this, "Chọn học sinh: " + studentName, Toast.LENGTH_SHORT).show();
                 checkCameraPermissionAndOpenCamera(selectedStudent);
+            }
+        });
+    }
+    @Override
+    protected void onResume() {
+        // Khi quay lại màn hình này, tải lại danh sách học sinh
+        super.onResume();
+        // Tải lại danh sách học sinh ở đây
+        loadStudentList();
+    }
+
+    private void loadStudentList() {
+        // Tải lại danh sách học sinh ở đây
+        //Lấy examCode và Email từ intent
+        Intent intent = getIntent();
+        if (intent != null) {
+            examCode = intent.getStringExtra("examCode");
+            email = intent.getStringExtra("email");
+            Log.d("StudentListActivity", "Test Code sau khi quay về từ ImageHandling: " + examCode);
+            Log.d("StudentListActivity", "Email sau khi quay về từ ImageHandling:: " + email);
+        }
+        ApiInterface apiInterface = RetrofitClient.getClient().create(ApiInterface.class);
+        Call<StudentInfoApiResponse> call = apiInterface.getStudentInfo(examCode, email);
+        call.enqueue(new Callback<StudentInfoApiResponse>() {
+            @Override
+            public void onResponse(Call<StudentInfoApiResponse> call, Response<StudentInfoApiResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    StudentInfoApiResponse studentInfoApiResponse = response.body();
+                    Log.d("StudentListActivity", "API Response: " + studentInfoApiResponse.toString());
+                    List<StudentInfo> studentList = studentInfoApiResponse.getStudentInExam();
+                    testDescription = studentInfoApiResponse.getDescriptionOfTest();
+                    headerTextView.setText(testDescription);
+                    showStudentList(studentList);
+                } else {
+                    Toast.makeText(StudentListActivity.this, "Đã xảy ra lỗi", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<StudentInfoApiResponse> call, Throwable t) {
+                Toast.makeText(StudentListActivity.this, "Đã xảy ra lỗi" + t, Toast.LENGTH_SHORT).show();
+                Log.e("StudentListActivity", "Lỗi: " + t);
             }
         });
     }

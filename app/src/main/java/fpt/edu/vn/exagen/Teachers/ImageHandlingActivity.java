@@ -71,6 +71,8 @@ public class ImageHandlingActivity extends AppCompatActivity {
     //private TextView textViewResponseBase64;
     private ApiResponse apiResponse;
     private String resultStringResponse;
+    private String examCode;
+    private String email;
     private ArrayList<Integer> numberString;
 
     private ArrayList<Character> itemsAnswers;
@@ -96,9 +98,9 @@ public class ImageHandlingActivity extends AppCompatActivity {
         Intent intent = getIntent();
         if (intent != null) {
             String imagePath = intent.getStringExtra(ImageDisplayActivity.EXTRA_IMAGE_PATH);
-            String email = intent.getStringExtra("email");
+            email = intent.getStringExtra("email");
             Log.d("ImageHandlingActivity", "Email: " + email);
-            String examCode = intent.getStringExtra("examCode");
+            examCode = intent.getStringExtra("examCode");
             Log.d("ImageHandlingActivity", "Exam Code: " + examCode);
             String testDescription = intent.getStringExtra("testDescription");
             Log.d("ImageHandlingActivity", "Test Description: " + testDescription);
@@ -148,19 +150,19 @@ public class ImageHandlingActivity extends AppCompatActivity {
 
 
             btnSubmit.setOnClickListener(new View.OnClickListener() {
-                                             @Override
-                                             public void onClick(View v) {
-                                                 //Xử lí API
-                                                 sendResultToApi(resultStringResponse);
-                                             }
-                                         });
-                    btnBack.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            // Trở về màn hình trước đó
-                            onBackPressed();
-                        }
-                    });
+                @Override
+                public void onClick(View v) {
+                    //Xử lí API
+                    sendResultToApi(resultStringResponse);
+                }
+            });
+            btnBack.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    // Trở về màn hình trước đó
+                    onBackPressed();
+                }
+            });
         } else {
             Toast.makeText(this, "imagePath không tồn tại", Toast.LENGTH_SHORT).show();
         }
@@ -189,6 +191,14 @@ public class ImageHandlingActivity extends AppCompatActivity {
 
                     Double result = response.body();
                     if (result != null) {
+                        //cập nhật lại màu sắc item trong student List
+                        boolean changeStateColor = true;
+
+                        Intent intent = new Intent(ImageHandlingActivity.this, StudentListActivity.class);
+                        intent.putExtra("examCode", examCode);
+                        intent.putExtra("email", email);
+                        intent.putExtra("changeStateColor", changeStateColor);
+                        startActivity(intent);
                         Log.d("Response", "Result: " + result);
                         Toast.makeText(ImageHandlingActivity.this, "Lưu thành công", Toast.LENGTH_SHORT).show();
                         Toast.makeText(ImageHandlingActivity.this, "Điểm số: " + result, Toast.LENGTH_LONG).show();
