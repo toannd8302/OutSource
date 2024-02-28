@@ -6,16 +6,12 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.google.android.material.button.MaterialButton;
-import com.google.android.material.textfield.TextInputEditText;
-
 import fpt.edu.vn.exagen.APIService.ApiInterface;
+import fpt.edu.vn.exagen.APIService.RetrofitClient;
 import fpt.edu.vn.exagen.Teachers.StudentListActivity;
-import fpt.edu.vn.exagen.Teachers.TeacherMainActivity;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -51,14 +47,10 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void checkPermissionAndStartActivity(String examCode, String email) {
-        // Tạo Retrofit instance
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("https://exagen.azurewebsites.net/")
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
+
 
         // Lấy instance của ApiInterface từ Retrofit
-        ApiInterface apiInterface = retrofit.create(ApiInterface.class);
+        ApiInterface apiInterface = RetrofitClient.getClient().create(ApiInterface.class);
 
         // Gọi API để kiểm tra quyền
         Call<Boolean> call = apiInterface.checkPermission(examCode, email);
@@ -85,6 +77,7 @@ public class LoginActivity extends AppCompatActivity {
             }
             @Override
             public void onFailure(Call<Boolean> call, Throwable t) {
+                Log.e("LoginActivity", "onFailure: " + t.getMessage());
                 Toast.makeText(LoginActivity.this, "Đã xảy ra lỗi khi kết nối đến server.", Toast.LENGTH_SHORT).show();
             }
         });

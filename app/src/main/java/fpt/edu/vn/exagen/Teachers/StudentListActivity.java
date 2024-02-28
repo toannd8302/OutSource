@@ -85,12 +85,10 @@ public class StudentListActivity extends AppCompatActivity {
                 public void onResponse(Call<StudentInfoApiResponse> call, Response<StudentInfoApiResponse> response) {
                     if (response.isSuccessful() && response.body() != null) {
                         StudentInfoApiResponse studentInfoApiResponse = response.body();
+                        Log.d("StudentListActivity", "API Response: " + studentInfoApiResponse.toString());
                         List<StudentInfo> studentList = studentInfoApiResponse.getStudentInExam();
                         testDescription = studentInfoApiResponse.getDescriptionOfTest();
-
-
                         headerTextView.setText(testDescription);
-
                         showStudentList(studentList);
                     } else {
                         Toast.makeText(StudentListActivity.this, "Đã xảy ra lỗi", Toast.LENGTH_SHORT).show();
@@ -99,7 +97,8 @@ public class StudentListActivity extends AppCompatActivity {
 
                 @Override
                 public void onFailure(Call<StudentInfoApiResponse> call, Throwable t) {
-                    Toast.makeText(StudentListActivity.this, "Đã xảy ra lỗi", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(StudentListActivity.this, "Đã xảy ra lỗi" + t, Toast.LENGTH_SHORT).show();
+                    Log.e("StudentListActivity", "Lỗi: " + t);
                 }
             });
         }
@@ -129,10 +128,7 @@ public class StudentListActivity extends AppCompatActivity {
                 examMarkId = selectedStudent.getExamMarkId();
                 studentId = selectedStudent.getStudentId();
                 Intent intent = new Intent(StudentListActivity.this, ImageHandlingActivity.class);
-
                 Toast.makeText(StudentListActivity.this, "Chọn học sinh: " + studentName, Toast.LENGTH_SHORT).show();
-
-
                 checkCameraPermissionAndOpenCamera(selectedStudent);
             }
         });
