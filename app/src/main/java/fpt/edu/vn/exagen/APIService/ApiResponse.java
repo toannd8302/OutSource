@@ -13,4 +13,6 @@ public class ApiResponse {
     public String getResultString() {
         return resultString;
     }
+
+
 }

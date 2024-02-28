@@ -125,9 +125,23 @@ public class StudentListActivity extends AppCompatActivity {
                 Log.d("StudentListActivity", "Item Clicked at position: " + position);
                 StudentInfo selectedStudent = studentList.get(position);
                 studentName = selectedStudent.getStudentName();
+                Log.d("StudentListActivity", "Student Name: " + studentName);
                 examMarkId = selectedStudent.getExamMarkId();
+                Log.d("StudentListActivity", "Exam Mark Id: " + examMarkId);
                 studentId = selectedStudent.getStudentId();
-                Intent intent = new Intent(StudentListActivity.this, ImageHandlingActivity.class);
+                Log.d("StudentListActivity", "Student Id: " + studentId);
+
+
+
+              //truyền dữ liệu qua activity ImageHandlingActivity
+                    Intent intent = new Intent(StudentListActivity.this, ImageHandlingActivity.class);
+                    intent.putExtra("studentName", studentName);
+                    intent.putExtra("examMarkId", examMarkId);
+                    intent.putExtra("examCode", examCode);
+                    intent.putExtra("email", email);
+                    intent.putExtra("testDescription", testDescription);
+
+
                 Toast.makeText(StudentListActivity.this, "Chọn học sinh: " + studentName, Toast.LENGTH_SHORT).show();
                 checkCameraPermissionAndOpenCamera(selectedStudent);
             }

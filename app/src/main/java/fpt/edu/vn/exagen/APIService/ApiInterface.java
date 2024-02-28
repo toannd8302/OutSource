@@ -11,7 +11,7 @@ public interface ApiInterface {
     @POST("api/v0/exams/send-image")
     Call<ApiResponse> sendImage(@Body JsonObject base64Image);
     @POST("api/v0/exams/save-result")
-    Call<ApiResponse> saveResult(@Body JsonObject result);
+    Call<Double> saveResult(@Body JsonObject result);
 
     @GET("api/v0/exams/check-permission/{examCode}/{email}")
     Call<Boolean> checkPermission(
