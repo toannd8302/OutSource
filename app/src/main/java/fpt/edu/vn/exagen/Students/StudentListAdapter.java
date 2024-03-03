@@ -44,18 +44,18 @@ public class StudentListAdapter extends ArrayAdapter<StudentInfo> {
         String studentName = studentInfo.getStudentName();
         String studentNo = String.valueOf(studentInfo.getNo());
 
-    // Tạo một SpannableString để đặt màu sắc cho "Tên HS"
+        // Tạo một SpannableString để đặt màu sắc cho "Tên HS"
         SpannableString spannableStringName = new SpannableString(studentName);
-    // Đặt màu xanh lá cho văn bản của "Tên HS"
+        // Đặt màu xanh lá cho văn bản của "Tên HS"
         spannableStringName.setSpan(new ForegroundColorSpan(ContextCompat.getColor(context, R.color.studentName)),
                 0, studentName.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 
-    // Tạo một SpannableString để đặt màu sắc cho "Mã HS"
+        // Tạo một SpannableString để đặt màu sắc cho "Mã HS"
         SpannableString spannableStringNo = new SpannableString("Mã HS: " + studentNo);
-    // Đặt màu xám cho văn bản của "Mã HS"
+        // Đặt màu xám cho văn bản của "Mã HS"
         spannableStringNo.setSpan(new ForegroundColorSpan(Color.GRAY), 0, 6 + studentNo.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE); // Độ dài của "Mã HS: " là 6
 
-    // Đặt văn bản đã tùy chỉnh cho TextView
+        // Đặt văn bản đã tùy chỉnh cho TextView
         studentInfoTextViewName.setText(spannableStringName);
         studentInfoTextViewNo.setText(spannableStringNo);
 

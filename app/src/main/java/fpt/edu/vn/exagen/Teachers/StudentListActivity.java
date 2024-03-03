@@ -1,10 +1,13 @@
 package fpt.edu.vn.exagen.Teachers;
 
+import static fpt.edu.vn.exagen.Utils.FileUtils.createImageFile;
+
 import android.Manifest;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
@@ -26,10 +29,12 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.core.content.FileProvider;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.Serializable;
 import java.util.List;
 
@@ -56,7 +61,7 @@ public class StudentListActivity extends AppCompatActivity {
     private String examMarkId; // ID của bài thi được chọn truyền qua activity ImageHandlingActivity
 
     private String studentId; // ID của học sinh được chọn truyền qua activity ImageHandlingActivity
-
+    private String currentPhotoPath;
     private static final int CAMERA_PERMISSION_REQUEST_CODE = 100;
     private static final int CAMERA_REQUEST_CODE = 101;
     private static final int DISPLAY_IMAGE_REQUEST_CODE = 102;
@@ -237,46 +242,84 @@ public class StudentListActivity extends AppCompatActivity {
     private void openCamera(StudentInfo selectedStudent) {
         Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         if (cameraIntent.resolveActivity(getPackageManager()) != null) {
-            startActivityForResult(cameraIntent, CAMERA_REQUEST_CODE);
+            File imageFile = null;
+            try {
+                imageFile = createImageFile(this);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            if (imageFile != null) {
+                currentPhotoPath = imageFile.getAbsolutePath(); // Gán giá trị cho currentPhotoPath
+                Uri imageUri = FileProvider.getUriForFile(this, "fpt.edu.vn.exagen.fileprovider", imageFile);
+                Log.d("StudentListActivity", "URI của ảnh: " + imageUri);
+                cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
+                if (selectedStudent != null) {
+                    cameraIntent.putExtra("studentId", selectedStudent.getStudentId());
+                }
+                startActivityForResult(cameraIntent, CAMERA_REQUEST_CODE);
+            }
         } else {
-            Toast.makeText(this, "Không tìm thấy ứng dụng Camera trên thiết bị", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Không thể mở camera", Toast.LENGTH_SHORT).show();
         }
     }
+
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == CAMERA_REQUEST_CODE && resultCode == RESULT_OK) {
-            // Xử lý hình ảnh đã chụp
-            Bundle extras = data.getExtras();
-            if (extras != null) {
-                Bitmap imageBitmap = (Bitmap) extras.get("data");
-
-                // Lưu ảnh vào một tệp tin
-                File imageFile = saveImageToFile(imageBitmap);
-
-                // Bắt đầu một activity mới để hiển thị ảnh đã chụp
-                displayCapturedImage(imageFile);
+            if (currentPhotoPath != null) {
+                File imageFile = new File(currentPhotoPath);
+                if (imageFile.exists()) {
+                    Log.d("StudentListActivity", "Đường dẫn ảnh: " + imageFile.getAbsolutePath());
+                    // Bắt đầu một activity mới để hiển thị ảnh đã chụp
+                    saveImageToFile(Uri.fromFile(imageFile));
+                    displayCapturedImage(imageFile);
+                } else {
+                    Toast.makeText(this, "Không thể tìm thấy tệp ảnh", Toast.LENGTH_SHORT).show();
+                }
+            } else {
+                Toast.makeText(this, "Đường dẫn ảnh không khả dụng", Toast.LENGTH_SHORT).show();
             }
         } else if (requestCode == DISPLAY_IMAGE_REQUEST_CODE && resultCode == RESULT_OK) {
             // Xử lý các hành động sau khi hiển thị ảnh (nếu cần)
         }
     }
 
-    private File saveImageToFile(Bitmap imageBitmap) {
+
+
+
+
+    private File saveImageToFile(Uri imageUri) {
         File imageFile = null;
         try {
-            imageFile = FileUtils.createImageFile(this);
+            imageFile = createImageFile(this);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        try (FileOutputStream fos = new FileOutputStream(imageFile)) {
-            imageBitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
+
+        try (InputStream inputStream = getContentResolver().openInputStream(imageUri);
+             FileOutputStream fos = new FileOutputStream(imageFile)) {
+
+            // Đọc dữ liệu từ Uri của hình ảnh và ghi vào tệp
+            byte[] buffer = new byte[1024];
+            int length;
+            while ((length = inputStream.read(buffer)) > 0) {
+                fos.write(buffer, 0, length);
+            }
+
         } catch (IOException e) {
             e.printStackTrace();
+            return null;
         }
+
+        // Kiểm tra kích thước tệp sau khi lưu
+        long fileSize = imageFile.length();
+        Log.d("StudentListActivity", "Kích thước tệp sau khi lưu: " + fileSize + " bytes");
+
         return imageFile;
     }
+
 
     private void displayCapturedImage(File imageFile) {
         Intent displayImageIntent = new Intent(this, ImageHandlingActivity.class);

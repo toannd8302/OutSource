@@ -5,206 +5,174 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Typeface;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
 import android.util.Base64;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
-import android.widget.ScrollView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Random;
-import java.util.Set;
-import java.util.TreeSet;
 
 import fpt.edu.vn.exagen.APIService.ApiInterface;
 import fpt.edu.vn.exagen.APIService.ApiResponse;
 import fpt.edu.vn.exagen.APIService.RetrofitClient;
 import fpt.edu.vn.exagen.R;
 import fpt.edu.vn.exagen.Students.ImageDisplayActivity;
-import fpt.edu.vn.exagen.Students.StudentInfo;
-import fpt.edu.vn.exagen.adapter.CustomSpinnerAdapter;
-import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 public class ImageHandlingActivity extends AppCompatActivity {
 
+    private ImageView imageViewResponse;
+    private Bitmap receivedBitmap;
+    private Button btnSubmit, btnBack;
+    private TextView tvTestDescription, tvStudentName, tvExamCode;
+    private String studentNo;
+    private String examMarkId;
+    private String paperCode;
+    private String resultStringResponse;
+    private String examCode;
+    private String email;
     private ImageView imageView;
     //private TextView textViewBase64;
 
-    private ImageView imageViewResponse;
-    private Bitmap receivedBitmap;
+    private ImageView imageViewResponseView;
+    private Bitmap receivedBitmapBitmap;
 
     private Spinner spAnswers;
-    private String examMarkId;
+    private String examMarkIdString;
     Bitmap scaledBitmap;
 
     //private TextView textViewResponseBase64;
     private ApiResponse apiResponse;
-    private String resultStringResponse;
-    private String examCode;
-    private String email;
+    private String resultStringResponseString;
+    private String examCodeString;
+    private String emailString;
     private ArrayList<Integer> numberString;
 
     private ArrayList<Character> itemsAnswers;
 
-    private Button btnSubmit, btnBack;
-    private TextView tvTestDescription, tvStudentName, tvExamCode;
+    private Button btnSubmitButton, btnBackButton;
+    private TextView tvStudentNo, tvStudentNameTextView, tvPaperCode;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_image_handling);
-        numberString = new ArrayList<>();
-        itemsAnswers = new ArrayList<>();
 
-        //textViewBase64 = findViewById(R.id.textViewBase64);
         imageViewResponse = findViewById(R.id.imageViewResponse);
         tvStudentName = findViewById(R.id.tvStudentName);
-        tvExamCode = findViewById(R.id.tvExamCode);
-        tvTestDescription = findViewById(R.id.tvTestDescription);
+        tvStudentNo = findViewById(R.id.tvStudentNo);
+        tvPaperCode = findViewById(R.id.tvPaperCode);
+
         btnSubmit = findViewById(R.id.btnSubmit);
         btnBack = findViewById(R.id.btnBackCam);
-        //spAnswers = findViewById(R.id.spAnswers);
+
         Intent intent = getIntent();
+
         if (intent != null) {
             String imagePath = intent.getStringExtra(ImageDisplayActivity.EXTRA_IMAGE_PATH);
             email = intent.getStringExtra("email");
-            Log.d("ImageHandlingActivity", "Email: " + email);
             examCode = intent.getStringExtra("examCode");
-            Log.d("ImageHandlingActivity", "Exam Code: " + examCode);
             String testDescription = intent.getStringExtra("testDescription");
-            Log.d("ImageHandlingActivity", "Test Description: " + testDescription);
             examMarkId = intent.getStringExtra("examMarkId");
-            Log.d("ImageHandlingActivity", "Exam Mark Id: " + examMarkId);
             String name = intent.getStringExtra("studentName");
-            Log.d("ImageHandlingActivity", "Name: " + name);
-            String studentId = intent.getStringExtra("studentId");
-            Log.d("ImageHandlingActivity", "Student Id: " + studentId);
+
             if (imagePath != null) {
                 // Hiển thị ảnh và base64Image trong ImageHandlingActivity
                 displayImageAndBase64(imagePath);
             } else {
                 Toast.makeText(this, "ImagePath rỗng", Toast.LENGTH_SHORT).show();
             }
-            //TODO: set Text và Style cho các TextView
+
+            // Set Text và Style cho các TextView
             tvStudentName.setText("Họ và Tên: " + name);
-            tvStudentName.setTextColor(getResources().getColor(R.color.textColor, null));
-            tvStudentName.setTypeface(null, Typeface.BOLD);
-            tvStudentName.setTextSize(16);
-
-            tvExamCode.setText("Mã HS: " + studentId);
-            tvExamCode.setTextColor(getResources().getColor(R.color.textColor, null));
-            tvExamCode.setTypeface(null, Typeface.BOLD);
-            tvExamCode.setTextSize(16);
-
-            tvTestDescription.setText("Mã đề thi: " + testDescription);
-            tvTestDescription.setTextColor(getResources().getColor(R.color.textColor, null));
-            tvTestDescription.setTypeface(null, Typeface.BOLD);
-            tvTestDescription.setTextSize(16);
-
 
         }
+
+        btnSubmit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Xử lí API
+                sendResultToApi(resultStringResponse);
+            }
+        });
+
+        btnBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Trở về màn hình trước đó
+                onBackPressed();
+            }
+        });
     }
 
-    private void displayImageAndBase64(String imagePath) {
-        File imgFile = new File(imagePath);
-        if (imgFile.exists()) {
-            Bitmap myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
-
-
-            //Ma hoa anh thanh base64
-            String base64Image = encodeImageToBase64(myBitmap);
-
-            // Gửi yêu cầu đến API
-            sendRequestToApi(base64Image);
-
-
-            btnSubmit.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    //Xử lí API
-                    sendResultToApi(resultStringResponse);
+    private void displayImageAndBase64(final String imagePath) {
+        Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                File imgFile = new File(imagePath);
+                if (imgFile.exists()) {
+                    Bitmap myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
+                    final String base64Image = encodeImageToBase64(myBitmap);
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            sendRequestToApi(base64Image);
+                        }
+                    });
+                } else {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(ImageHandlingActivity.this, "imagePath không tồn tại", Toast.LENGTH_SHORT).show();
+                        }
+                    });
                 }
-            });
-            btnBack.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    // Trở về màn hình trước đó
-                    onBackPressed();
-                }
-            });
-        } else {
-            Toast.makeText(this, "imagePath không tồn tại", Toast.LENGTH_SHORT).show();
-        }
+            }
+        });
+        thread.start();
     }
 
     private void sendResultToApi(String answer) {
-        // Tạo JSON Object để chứa dữ liệu Base64
+        // Tạo JSON Object để chứa dữ liệu cần gửi đến API
         JsonObject jsonObject = new JsonObject();
-        jsonObject.addProperty("paperCode", 1);
+        jsonObject.addProperty("paperCode", paperCode);
         jsonObject.addProperty("answersSelected", answer);
         jsonObject.addProperty("examMarkId", examMarkId);
 
-        // In ra dữ liệu yêu cầu gửi đi
-        Log.d("API Request", "Request Data: " + jsonObject.toString());
 
         // Sử dụng Retrofit để gửi yêu cầu POST đến API
         ApiInterface apiInterface = RetrofitClient.getClient().create(ApiInterface.class);
-
-        // Truyền JsonObject v trả về Double(điểm số)
         Call<Double> call = apiInterface.saveResult(jsonObject);
 
+        // Thực hiện cuộc gọi bất đồng bộ và xử lý kết quả
         call.enqueue(new Callback<Double>() {
             @Override
             public void onResponse(Call<Double> call, Response<Double> response) {
                 if (response.isSuccessful()) {
-
                     Double result = response.body();
                     if (result != null) {
-                        //cập nhật lại màu sắc item trong student List
-                        boolean changeStateColor = true;
-
-                        Intent intent = new Intent(ImageHandlingActivity.this, StudentListActivity.class);
-                        intent.putExtra("examCode", examCode);
-                        intent.putExtra("email", email);
-                        intent.putExtra("changeStateColor", changeStateColor);
-                        startActivity(intent);
-                        Log.d("Response", "Result: " + result);
-                        Toast.makeText(ImageHandlingActivity.this, "Lưu thành công", Toast.LENGTH_SHORT).show();
-                        Toast.makeText(ImageHandlingActivity.this, "Điểm số: " + result, Toast.LENGTH_LONG).show();
+                        // Điều hướng đến màn hình danh sách sinh viên và hiển thị thông báo
+                        navigateToStudentList(result);
                     }
                 } else {
-
                     Log.e("Error", "Unsuccessful response from API: " + response.code());
                 }
             }
@@ -217,105 +185,62 @@ public class ImageHandlingActivity extends AppCompatActivity {
         });
     }
 
-
-    //Ma hoa  anh base64
     private String encodeImageToBase64(Bitmap bitmap) {
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream);
         byte[] byteArray = byteArrayOutputStream.toByteArray();
         return Base64.encodeToString(byteArray, Base64.DEFAULT);
     }
 
-    //Giải mã base64Image thành ảnh từ API
-    private Bitmap decodeBase64ToImage(String base64Image) {
-        byte[] decodedString = Base64.decode(base64Image, Base64.DEFAULT);
-        return BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
-    }
 
     private void sendRequestToApi(String base64Image) {
-        // Tạo JSON Object để chứa dữ liệu Base64
-        JsonObject jsonObject = new JsonObject();
-        jsonObject.addProperty("base64Image", base64Image);
-
-        // In ra dữ liệu yêu cầu gửi đi
-        Log.d("API Request", "Request Data: " + jsonObject.toString());
-
-        // Sử dụng Retrofit để gửi yêu cầu POST đến API
         ApiInterface apiInterface = RetrofitClient.getClient().create(ApiInterface.class);
 
-        // Truyền JsonObject thay vì RequestBody
-        Call<ApiResponse> call = apiInterface.sendImage(jsonObject);
-
-        call.enqueue(new Callback<ApiResponse>() {
+        SendRequestTask.SendRequestListener listener = new SendRequestTask.SendRequestListener() {
             @Override
-            public void onResponse(Call<ApiResponse> call, Response<ApiResponse> response) {
-                // Chuyển đổi response bất đồng bộ sang đồng bộ
-                ApiResponse apiResponse = null;
-                try {
-                    apiResponse = handleResponse(response);
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-
+            public void onRequestSuccess(ApiResponse response) {
+                handleResponse(response);
+                tvStudentNo.setText("Mã HS: " + studentNo);
+                Log.d("ImageHandlingActivity", "studentNo: " + studentNo);
+                tvPaperCode.setText("Mã đề thi: " + paperCode);
+                Log.d("ImageHandlingActivity", "paperCode: " + paperCode);
             }
 
             @Override
-            public void onFailure(Call<ApiResponse> call, Throwable t) {
-                // Xử lý lỗi gửi yêu cầu
-                Log.e("Error", "Error sending request to API: " + t.getMessage());
+            public void onRequestFailure() {
+                // Xử lý trường hợp gửi yêu cầu thất bại
+                Toast.makeText(ImageHandlingActivity.this, "Failed to send request to API", Toast.LENGTH_SHORT).show();
+                Log.e("Error", "Failed to send request to API");
             }
-        });
+        };
+
+        SendRequestTask sendRequestTask = new SendRequestTask(apiInterface, listener);
+        sendRequestTask.execute(base64Image);
     }
 
-    private ApiResponse handleResponse(Response<ApiResponse> response) throws IOException {
-        Log.d("API Response", "Response Code: " + response.code());
+    private void handleResponse(ApiResponse response) {
 
-        if (response.isSuccessful()) {
-            // Xử lý kết quả thành công
-            ApiResponse apiResponse = response.body();
-            //Log kiểm tra kết quả
-            Log.d("API Response", "Response Data Base64Image: " + apiResponse.getBase64Image());
-            Log.d("API Response", "Response Data Result String: " + apiResponse.getResultString());
-            resultStringResponse = apiResponse.getResultString();
+        if (response != null) {
+            Log.d("ImageHandlingActivity", "responseStudentNo " + response.getStudentNo());
+            studentNo = response.getStudentNo();
+            Log.d("ImageHandlingActivity", "responsePaperCode: " + response.getPaperCode());
+            paperCode = response.getPaperCode();
+            resultStringResponse = response.getResultString();
+            Log.d("ImageHandlingActivity", "resultStringResponse: " + resultStringResponse);
 
-            if (apiResponse != null) {
-                // Giải mã base64Image thành ảnh và hiển thị ảnh
-                Bitmap bitmap = decodeBase64ToImage(apiResponse.getBase64Image());
-
-
-                int newWidth = bitmap.getWidth() * 3;
-
-                int newHeight = bitmap.getHeight() * 3;
-
-                // Set up lại hình có kích thước mới
-                scaledBitmap = Bitmap.createScaledBitmap(bitmap, newWidth, newHeight, true);
-                receivedBitmap = scaledBitmap;
-                imageViewResponse.setImageBitmap(scaledBitmap);
-                displayImageViewAndSpinner();
-            }
-        } else {
-            // Xử lý kết quả lỗi
-            String errorBody = response.errorBody().string();
-            Log.e("Error", "Error response from API: " + errorBody);
-
-            // Thực hiện xử lý của bạn với thông báo lỗi trong errorBody
-            // Ví dụ: chuyển đổi errorBody thành đối tượng ApiResponse để xử lý thông báo lỗi
-            ApiResponse errorResponse = new Gson().fromJson(errorBody, ApiResponse.class);
-
-            // Tiếp theo, bạn có thể truy cập thông báo lỗi từ errorResponse
-            if (errorResponse != null) {
-                String errorMessage = errorResponse.getResultString();
-                // Xử lý thông báo lỗi ở đây
-
-            }
+            // Giải mã base64Image thành ảnh và hiển thị ảnh
+            receivedBitmap = decodeBase64ToImage(response.getBase64Image());
+            //
+            // Hiển thị ảnh và spinner
+            displayImageViewAndSpinner();
         }
-        return null;
     }
 
-    //
     private void displayImageViewAndSpinner() {
         // Xử lý chuỗi kết quả từ API
         ArrayList<Object[]> answers = stringProcessing(resultStringResponse);
+        ArrayList<Integer> numberString = new ArrayList<>();
+        ArrayList<Character> itemsAnswers = new ArrayList<>();
         for (Object[] answer : answers) {
             Log.d("Answer", "Answer: " + Arrays.toString(answer));
             numberString.add((Integer) answer[0]);
@@ -362,22 +287,41 @@ public class ImageHandlingActivity extends AppCompatActivity {
         }
     }
 
+    private Bitmap decodeBase64ToImage(String base64Image) {
+        byte[] decodedString = Base64.decode(base64Image, Base64.DEFAULT);
+        return BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+    }
+
+    private void navigateToStudentList(Double result) {
+        // Điều hướng đến màn hình danh sách sinh viên và hiển thị thông báo
+        boolean changeStateColor = true;
+        Intent intent = new Intent(ImageHandlingActivity.this, StudentListActivity.class);
+        intent.putExtra("examCode", examCode);
+        intent.putExtra("email", email);
+        intent.putExtra("changeStateColor", changeStateColor);
+        startActivity(intent);
+        Toast.makeText(ImageHandlingActivity.this, "Lưu thành công", Toast.LENGTH_SHORT).show();
+
+    }
+
+
     //xử lí chuỗi kết quả từ API
     private static ArrayList<Object[]> stringProcessing(String resultStringResponse) {
+        // Kiểm tra và loại bỏ dấu | cuối cùng nếu có
+        if (resultStringResponse.endsWith("|")) {
+            resultStringResponse = resultStringResponse.substring(0, resultStringResponse.length() - 1);
+        }
+
         String[] parts = resultStringResponse.split("\\|");
         ArrayList<Object[]> arraysList = new ArrayList<>();
 
         for (String part : parts) {
             String[] subParts = part.split(":");
-            char character = subParts.length > 1 ? subParts[1].charAt(0) : 'A';
-            if (subParts.length > 1) {
-
-                arraysList.add(new Object[]{Integer.parseInt(subParts[0]), character});
-            } else {
-                // Nếu mảng chỉ có 1 phần tử hoặc không có phần tử nào, thêm một phần tử mới có giá trị mặc định "A"
-                arraysList.add(new Object[]{Integer.parseInt(subParts[0]), 'A'});
-            }
+            int questionNumber = Integer.parseInt(subParts[0]);
+            char answer = subParts.length > 1 ? subParts[1].charAt(0) : 'A';
+            arraysList.add(new Object[]{questionNumber, answer});
         }
         return arraysList;
     }
+
 }
