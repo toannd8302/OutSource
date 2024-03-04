@@ -31,6 +31,7 @@ import java.util.Arrays;
 import fpt.edu.vn.exagen.APIService.ApiInterface;
 import fpt.edu.vn.exagen.APIService.ApiResponse;
 import fpt.edu.vn.exagen.APIService.RetrofitClient;
+import fpt.edu.vn.exagen.APIService.SendRequestTasks;
 import fpt.edu.vn.exagen.R;
 import fpt.edu.vn.exagen.Students.ImageDisplayActivity;
 import retrofit2.Call;
@@ -194,7 +195,7 @@ public class ImageHandlingActivity extends AppCompatActivity {
     private void sendRequestToApi(String base64Image) {
         ApiInterface apiInterface = RetrofitClient.getClient().create(ApiInterface.class);
 
-        SendRequestTask.SendRequestListener listener = new SendRequestTask.SendRequestListener() {
+        SendRequestTasks.SendRequestListener listener = new SendRequestTasks.SendRequestListener() {
             @Override
             public void onRequestSuccess(ApiResponse response) {
                 handleResponse(response);
@@ -212,7 +213,7 @@ public class ImageHandlingActivity extends AppCompatActivity {
             }
         };
 
-        SendRequestTask sendRequestTask = new SendRequestTask(apiInterface, listener);
+        SendRequestTasks sendRequestTask = new SendRequestTasks(apiInterface, listener);
         sendRequestTask.execute(base64Image);
     }
 
