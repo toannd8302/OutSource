@@ -8,7 +8,7 @@ public class ApiResponse {
     @SerializedName("Result")
     private String resultString;
     @SerializedName("PaperCode")
-    private String paperCode;
+    private int paperCode;
     @SerializedName("StudentNo")
     private String studentNo;
 
@@ -20,7 +20,7 @@ public class ApiResponse {
         return resultString;
     }
 
-    public String getPaperCode() {
+    public Integer getPaperCode() {
         return paperCode;
     }
 

@@ -46,7 +46,7 @@ public class ImageHandlingActivity extends AppCompatActivity {
     private TextView tvTestDescription, tvStudentName, tvExamCode;
     private String studentNo;
     private String examMarkId;
-    private String paperCode;
+    private int paperCode;
     private String resultStringResponse;
     private String examCode;
     private String email;
@@ -157,7 +157,7 @@ public class ImageHandlingActivity extends AppCompatActivity {
         jsonObject.addProperty("paperCode", paperCode);
         jsonObject.addProperty("answersSelected", answer);
         jsonObject.addProperty("examMarkId", examMarkId);
-
+        Log.d("ImageHandlingActivity", "jsonObjec: " + jsonObject.toString());
 
         ApiInterface apiInterface = RetrofitClient.getClient().create(ApiInterface.class);
         Call<Double> call = apiInterface.saveResult(jsonObject);
@@ -167,13 +167,11 @@ public class ImageHandlingActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<Double> call, Response<Double> response) {
                 if (response.isSuccessful()) {
-                    Double result = response.body();
-                    if (result != null) {
-
-                        navigateToStudentList(result);
-                    }
+                    Log.d("ImageHandlingActivity", "Response: " + response.code());
+                    navigateToStudentList();
                 } else {
                     Log.e("Error", "Unsuccessful response from API: " + response.code());
+                    Toast.makeText(ImageHandlingActivity.this, "Có lỗi xảy ra", Toast.LENGTH_SHORT).show();
                 }
             }
 
@@ -291,7 +289,7 @@ public class ImageHandlingActivity extends AppCompatActivity {
         return BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
     }
 
-    private void navigateToStudentList(Double result) {
+    private void navigateToStudentList() {
         boolean changeStateColor = true;
         Intent intent = new Intent(ImageHandlingActivity.this, StudentListActivity.class);
         intent.putExtra("examCode", examCode);
