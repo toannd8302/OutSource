@@ -155,17 +155,12 @@ public class StudentListActivity extends AppCompatActivity {
                 Log.d("StudentListActivity", "Exam Mark Id: " + examMarkId);
                 studentId = selectedStudent.getStudentId();
                 Log.d("StudentListActivity", "Student Id: " + studentId);
-
-
-              //truyền dữ liệu qua activity ImageHandlingActivity
                     Intent intent = new Intent(StudentListActivity.this, ImageHandlingActivity.class);
                     intent.putExtra("studentName", studentName);
                     intent.putExtra("examMarkId", examMarkId);
                     intent.putExtra("examCode", examCode);
                     intent.putExtra("email", email);
                     intent.putExtra("testDescription", testDescription);
-
-
                 Toast.makeText(StudentListActivity.this, "Chọn học sinh: " + studentName, Toast.LENGTH_SHORT).show();
                 checkCameraPermissionAndOpenCamera(selectedStudent);
             }
@@ -173,15 +168,12 @@ public class StudentListActivity extends AppCompatActivity {
     }
     @Override
     protected void onResume() {
-        // Khi quay lại màn hình này, tải lại danh sách học sinh
         super.onResume();
-        // Tải lại danh sách học sinh ở đây
         loadStudentList();
     }
 
     private void loadStudentList() {
-        // Tải lại danh sách học sinh ở đây
-        //Lấy examCode và Email từ intent
+
         Intent intent = getIntent();
         if (intent != null) {
             examCode = intent.getStringExtra("examCode");
@@ -205,7 +197,6 @@ public class StudentListActivity extends AppCompatActivity {
                     Toast.makeText(StudentListActivity.this, "Đã xảy ra lỗi", Toast.LENGTH_SHORT).show();
                 }
             }
-
             @Override
             public void onFailure(Call<StudentInfoApiResponse> call, Throwable t) {
                 Toast.makeText(StudentListActivity.this, "Đã xảy ra lỗi" + t, Toast.LENGTH_SHORT).show();
@@ -213,7 +204,6 @@ public class StudentListActivity extends AppCompatActivity {
             }
         });
     }
-
     private void checkCameraPermissionAndOpenCamera(StudentInfo selectedStudent) {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
             openCamera(selectedStudent);
@@ -221,17 +211,14 @@ public class StudentListActivity extends AppCompatActivity {
             requestCameraPermission();
         }
     }
-
     private void requestCameraPermission() {
         ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, CAMERA_PERMISSION_REQUEST_CODE);
     }
-
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == CAMERA_PERMISSION_REQUEST_CODE) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                // Nếu quyền truy cập Camera được cấp, mở camera
                 openCamera(null);
             } else {
                 Toast.makeText(this, "Quyền truy cập Camera bị từ chối", Toast.LENGTH_SHORT).show();
@@ -249,7 +236,7 @@ public class StudentListActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
             if (imageFile != null) {
-                currentPhotoPath = imageFile.getAbsolutePath(); // Gán giá trị cho currentPhotoPath
+                currentPhotoPath = imageFile.getAbsolutePath();
                 Uri imageUri = FileProvider.getUriForFile(this, "fpt.edu.vn.exagen.fileprovider", imageFile);
                 Log.d("StudentListActivity", "URI của ảnh: " + imageUri);
                 cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
@@ -262,8 +249,6 @@ public class StudentListActivity extends AppCompatActivity {
             Toast.makeText(this, "Không thể mở camera", Toast.LENGTH_SHORT).show();
         }
     }
-
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -272,7 +257,6 @@ public class StudentListActivity extends AppCompatActivity {
                 File imageFile = new File(currentPhotoPath);
                 if (imageFile.exists()) {
                     Log.d("StudentListActivity", "Đường dẫn ảnh: " + imageFile.getAbsolutePath());
-                    // Bắt đầu một activity mới để hiển thị ảnh đã chụp
                     saveImageToFile(Uri.fromFile(imageFile));
                     displayCapturedImage(imageFile);
                 } else {
@@ -286,10 +270,6 @@ public class StudentListActivity extends AppCompatActivity {
         }
     }
 
-
-
-
-
     private File saveImageToFile(Uri imageUri) {
         File imageFile = null;
         try {
@@ -297,11 +277,9 @@ public class StudentListActivity extends AppCompatActivity {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-
         try (InputStream inputStream = getContentResolver().openInputStream(imageUri);
              FileOutputStream fos = new FileOutputStream(imageFile)) {
 
-            // Đọc dữ liệu từ Uri của hình ảnh và ghi vào tệp
             byte[] buffer = new byte[1024];
             int length;
             while ((length = inputStream.read(buffer)) > 0) {

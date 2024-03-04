@@ -95,13 +95,13 @@ public class ImageHandlingActivity extends AppCompatActivity {
             String name = intent.getStringExtra("studentName");
 
             if (imagePath != null) {
-                // Hiển thị ảnh và base64Image trong ImageHandlingActivity
+
                 displayImageAndBase64(imagePath);
             } else {
                 Toast.makeText(this, "ImagePath rỗng", Toast.LENGTH_SHORT).show();
             }
 
-            // Set Text và Style cho các TextView
+
             tvStudentName.setText("Họ và Tên: " + name);
 
         }
@@ -158,18 +158,17 @@ public class ImageHandlingActivity extends AppCompatActivity {
         jsonObject.addProperty("examMarkId", examMarkId);
 
 
-        // Sử dụng Retrofit để gửi yêu cầu POST đến API
         ApiInterface apiInterface = RetrofitClient.getClient().create(ApiInterface.class);
         Call<Double> call = apiInterface.saveResult(jsonObject);
 
-        // Thực hiện cuộc gọi bất đồng bộ và xử lý kết quả
+
         call.enqueue(new Callback<Double>() {
             @Override
             public void onResponse(Call<Double> call, Response<Double> response) {
                 if (response.isSuccessful()) {
                     Double result = response.body();
                     if (result != null) {
-                        // Điều hướng đến màn hình danh sách sinh viên và hiển thị thông báo
+
                         navigateToStudentList(result);
                     }
                 } else {
@@ -179,7 +178,6 @@ public class ImageHandlingActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<Double> call, Throwable t) {
-                // Xử lý lỗi khi gửi yêu cầu
                 Log.e("Error", "Error sending request to API: " + t.getMessage());
             }
         });
@@ -208,7 +206,7 @@ public class ImageHandlingActivity extends AppCompatActivity {
 
             @Override
             public void onRequestFailure() {
-                // Xử lý trường hợp gửi yêu cầu thất bại
+
                 Toast.makeText(ImageHandlingActivity.this, "Failed to send request to API", Toast.LENGTH_SHORT).show();
                 Log.e("Error", "Failed to send request to API");
             }
@@ -257,7 +255,7 @@ public class ImageHandlingActivity extends AppCompatActivity {
         ImageView imageView = findViewById(R.id.imageViewResponse);
         imageView.setImageBitmap(receivedBitmap);
         for (int i = 0; i < numberString.size(); i++) {
-            // Tạo một LinearLayout mới để chứa mỗi cặp TextView và Spinner
+
             LinearLayout rowLayout = new LinearLayout(this);
             rowLayout.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
             rowLayout.setOrientation(LinearLayout.HORIZONTAL);
@@ -265,7 +263,7 @@ public class ImageHandlingActivity extends AppCompatActivity {
                     LinearLayout.LayoutParams.MATCH_PARENT,
                     LinearLayout.LayoutParams.WRAP_CONTENT
             );
-            // Thiết lập margin cho LinearLayout
+
             int leftMargin = 20;
             int topMargin = 10;
             int rightMargin = 20;
@@ -282,7 +280,7 @@ public class ImageHandlingActivity extends AppCompatActivity {
             textView1.setPadding(10, 0, 10, 0);
             textView1.setText(itemsAnswers.get(i).toString());
             rowLayout.addView(textView1);
-            // Thêm LinearLayout vào LinearLayout chứa các cặp TextView và Spinner
+
             llMain.addView(rowLayout);
         }
     }
@@ -293,7 +291,6 @@ public class ImageHandlingActivity extends AppCompatActivity {
     }
 
     private void navigateToStudentList(Double result) {
-        // Điều hướng đến màn hình danh sách sinh viên và hiển thị thông báo
         boolean changeStateColor = true;
         Intent intent = new Intent(ImageHandlingActivity.this, StudentListActivity.class);
         intent.putExtra("examCode", examCode);
