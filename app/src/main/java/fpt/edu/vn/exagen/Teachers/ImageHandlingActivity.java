@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -71,22 +72,20 @@ public class ImageHandlingActivity extends AppCompatActivity {
 
     private Button btnSubmitButton, btnBackButton;
     private TextView tvStudentNo, tvStudentNameTextView, tvPaperCode;
+    private ProgressBar progressBarResult;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_image_handling);
-
         imageViewResponse = findViewById(R.id.imageViewResponse);
         tvStudentName = findViewById(R.id.tvStudentName);
         tvStudentNo = findViewById(R.id.tvStudentNo);
         tvPaperCode = findViewById(R.id.tvPaperCode);
-
         btnSubmit = findViewById(R.id.btnSubmit);
         btnBack = findViewById(R.id.btnBackCam);
-
+        progressBarResult = findViewById(R.id.progressBarResult);
         Intent intent = getIntent();
-
         if (intent != null) {
             String imagePath = intent.getStringExtra(ImageDisplayActivity.EXTRA_IMAGE_PATH);
             email = intent.getStringExtra("email");
@@ -96,17 +95,12 @@ public class ImageHandlingActivity extends AppCompatActivity {
             String name = intent.getStringExtra("studentName");
 
             if (imagePath != null) {
-
                 displayImageAndBase64(imagePath);
             } else {
                 Toast.makeText(this, "ImagePath rỗng", Toast.LENGTH_SHORT).show();
             }
-
-
             tvStudentName.setText("Họ và Tên: " + name);
-
         }
-
         btnSubmit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -158,7 +152,6 @@ public class ImageHandlingActivity extends AppCompatActivity {
         jsonObject.addProperty("answersSelected", answer);
         jsonObject.addProperty("examMarkId", examMarkId);
         Log.d("ImageHandlingActivity", "jsonObjec: " + jsonObject.toString());
-
         ApiInterface apiInterface = RetrofitClient.getClient().create(ApiInterface.class);
         Call<Double> call = apiInterface.saveResult(jsonObject);
 
@@ -205,9 +198,9 @@ public class ImageHandlingActivity extends AppCompatActivity {
 
             @Override
             public void onRequestFailure() {
-
                 Toast.makeText(ImageHandlingActivity.this, "Failed to send request to API", Toast.LENGTH_SHORT).show();
                 Log.e("Error", "Failed to send request to API");
+                onBackPressed();
             }
         };
 
@@ -224,16 +217,15 @@ public class ImageHandlingActivity extends AppCompatActivity {
             paperCode = response.getPaperCode();
             resultStringResponse = response.getResultString();
             Log.d("ImageHandlingActivity", "resultStringResponse: " + resultStringResponse);
-
             // Giải mã base64Image thành ảnh và hiển thị ảnh
             receivedBitmap = decodeBase64ToImage(response.getBase64Image());
-            //
             // Hiển thị ảnh và spinner
             displayImageViewAndSpinner();
         }
     }
 
     private void displayImageViewAndSpinner() {
+        progressBarResult.setVisibility(View.VISIBLE);
         // Xử lý chuỗi kết quả từ API
         ArrayList<Object[]> answers = stringProcessing(resultStringResponse);
         ArrayList<Integer> numberString = new ArrayList<>();
@@ -254,7 +246,6 @@ public class ImageHandlingActivity extends AppCompatActivity {
         ImageView imageView = findViewById(R.id.imageViewResponse);
         imageView.setImageBitmap(receivedBitmap);
         for (int i = 0; i < numberString.size(); i++) {
-
             LinearLayout rowLayout = new LinearLayout(this);
             rowLayout.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
             rowLayout.setOrientation(LinearLayout.HORIZONTAL);
@@ -262,7 +253,6 @@ public class ImageHandlingActivity extends AppCompatActivity {
                     LinearLayout.LayoutParams.MATCH_PARENT,
                     LinearLayout.LayoutParams.WRAP_CONTENT
             );
-
             int leftMargin = 20;
             int topMargin = 10;
             int rightMargin = 20;
@@ -279,8 +269,20 @@ public class ImageHandlingActivity extends AppCompatActivity {
             textView1.setPadding(10, 0, 10, 0);
             textView1.setText(itemsAnswers.get(i).toString());
             rowLayout.addView(textView1);
-
             llMain.addView(rowLayout);
+        }
+        constraintLayout.addView(llMain);
+        progressBarResult.setVisibility(View.GONE);
+    }
+
+    private void showResult(boolean showResult) {
+        if (showResult) {
+            progressBarResult.setVisibility(View.GONE);
+            imageViewResponse.setVisibility(View.VISIBLE);
+
+        } else {
+            progressBarResult.setVisibility(View.VISIBLE);
+            imageViewResponse.setVisibility(View.GONE);
         }
     }
 

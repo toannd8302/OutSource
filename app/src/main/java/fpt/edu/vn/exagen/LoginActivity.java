@@ -39,79 +39,75 @@ public class LoginActivity extends AppCompatActivity {
         progressBar = findViewById(R.id.progressBar);
 
         startButton.setOnClickListener(new View.OnClickListener() {
+
             @Override
             public void onClick(View view) {
                 String examCode = examCodeEditText.getText().toString();// Lấy thông tin từ EditText
                 String email = emailEditText.getText().toString();
-                //Show progress bar lúc bấm nút v thành công thì ẩn đi
-                //validate
-                showProgressBar(true);
+
                 // Gọi hàm kiểm tra quyền chấm bài
                 checkPermissionAndStartActivity(examCode, email);
-
             }
         });
     }
 
-
     private void showProgressBar(Boolean isLoading) {
         if (isLoading) {
-            startButton.setVisibility(View.GONE);
+            startButton.setVisibility(View.GONE); // Vô hiệu hóa nút bắt đầu để ngăn người dùng bấm lại
             progressBar.setVisibility(View.VISIBLE);
         } else {
-            startButton.setVisibility(View.VISIBLE);
+            startButton.setVisibility(View.VISIBLE); // Kích hoạt lại nút bắt đầu khi hoàn thành
             progressBar.setVisibility(View.GONE);
         }
     }
 
     private void checkPermissionAndStartActivity(String examCode, String email) {
-        try {
-            // Kiểm tra xem người dùng đã nhập đủ thông tin chưa
-            if (examCode.isEmpty() || email.isEmpty()) {
-                Toast.makeText(this, "Vui lòng nhập mã đề thi và email.", Toast.LENGTH_SHORT).show();
-                return;
-            }
-
-            // Lấy instance của ApiInterface từ Retrofit
-            ApiInterface apiInterface = RetrofitClient.getClient().create(ApiInterface.class);
-
-            // Gọi API để kiểm tra quyền
-            Call<Boolean> call = apiInterface.checkPermission(examCode, email);
-
-            call.enqueue(new Callback<Boolean>() {
-
-                @Override
-                public void onResponse(Call<Boolean> call, Response<Boolean> response) {
-                    if (response.isSuccessful() && response.body() != null) {
-                        Log.e("TAG", "response: " + response.toString());
-                        boolean hasPermission = response.body();
-                        if (hasPermission) {
-                            // Nếu có quyền, chuyển sang màn hình StudentListActivity
-                            Intent intent = new Intent(LoginActivity.this, StudentListActivity.class);
-                            // Đính kèm thông tin vào Intent
-                            intent.putExtra("examCode", examCode);
-                            intent.putExtra("email", email);
-                            startActivity(intent);
-                            finish(); // Đóng màn hình hiện tại
-                        } else {
-                            Toast.makeText(LoginActivity.this, "Bạn không có quyền chấm bài cho đề thi này.", Toast.LENGTH_SHORT).show();
-                        }
-                    } else {
-                        Toast.makeText(LoginActivity.this, "Đã xảy ra lỗi khi kiểm tra quyền.", Toast.LENGTH_SHORT).show();
-                    }
-                }
-
-                @Override
-                public void onFailure(Call<Boolean> call, Throwable t) {
-                    Log.e("LoginActivity", "onFailure: " + t.getMessage());
-                    Toast.makeText(LoginActivity.this, "Đã xảy ra lỗi khi kết nối đến server.", Toast.LENGTH_SHORT).show();
-                }
-            });
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            showProgressBar(false);
+        // Hiển thị ProgressBar
+        showProgressBar(true);
+        // Kiểm tra xem người dùng đã nhập đủ thông tin chưa
+        if (examCode.isEmpty() || email.isEmpty()) {
+            showProgressBar(false); // ẩn progress bar
+            Toast.makeText(this, "Vui lòng nhập mã đề thi và email.", Toast.LENGTH_SHORT).show();
+            return;
         }
 
+        // Lấy instance của ApiInterface từ Retrofit
+        ApiInterface apiInterface = RetrofitClient.getClient().create(ApiInterface.class);
+
+        // Gọi API để kiểm tra quyền
+        Call<Boolean> call = apiInterface.checkPermission(examCode, email);
+
+        call.enqueue(new Callback<Boolean>() {
+            @Override
+            public void onResponse(Call<Boolean> call, Response<Boolean> response) {
+                showProgressBar(false); // ẩn ProgressBar khi quá trình kiểm tra hoàn thành
+                if (response.isSuccessful() && response.body() != null) {
+                    boolean hasPermission = response.body();
+                    if (hasPermission) {
+                        // Nếu có quyền, chuyển sang màn hình StudentListActivity
+                        Intent intent = new Intent(LoginActivity.this, StudentListActivity.class);
+                        // Đính kèm thông tin vào Intent
+                        intent.putExtra("examCode", examCode);
+                        intent.putExtra("email", email);
+                        startActivity(intent);
+                        finish(); // Đóng màn hình hiện tại
+                    } else {
+                        Toast.makeText(LoginActivity.this, "Bạn không có quyền chấm bài cho đề thi này.", Toast.LENGTH_SHORT).show();
+                    }
+                } else {
+                    Toast.makeText(LoginActivity.this, "Đã xảy ra lỗi khi kiểm tra quyền.", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Boolean> call, Throwable t) {
+                Log.e("LoginActivity", "onFailure: " + t.getMessage());
+                showProgressBar(false); // ẩn ProgressBar nếu gặp lỗi
+                Toast.makeText(LoginActivity.this, "Đã xảy ra lỗi khi kết nối đến server.", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 }
+
+
+
