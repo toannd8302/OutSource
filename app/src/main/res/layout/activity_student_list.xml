@@ -1,69 +1,78 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<HorizontalScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:background="@drawable/background_linear_gradient">
+    android:background="@drawable/background_linear_gradient"
+    android:orientation="vertical"
+    android:fillViewport="true"
 
-    <FrameLayout
+    >
 
-        android:id="@+id/fragment_container"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
-    <!-- Header Section -->
-    <TextView
-        android:id="@+id/headerTextView"
+    <!-- Linear Layout for vertical orientation -->
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/button_background"
-        android:padding="16dp"
-        android:textColor="@color/black"
-        android:textSize="18sp"
-        android:textStyle="bold" />
+        android:orientation="vertical">
 
-    <!-- ListView Section -->
-    <ListView
-        android:id="@+id/listView"
+        <!-- AppBar -->
+        <include
+            android:id="@+id/appbar1"
+            layout="@layout/app_bar" />
 
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/headerTextView"
-        android:layout_marginStart="10dp"
-        android:layout_marginEnd="10dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginBottom="8dp"
-        android:divider="@color/white"
-        android:dividerHeight="10dp"
-        android:scrollbars="vertical"
-        tools:listitem="@layout/item_student" />
+        <!-- Header Section -->
+        <TextView
+            android:id="@+id/headerTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/button_background"
+            android:elevation="10dp"
 
+            android:padding="16dp"
+            android:textColor="@color/black"
+            android:textSize="18sp"
+            android:layout_marginBottom="30dp"
+            android:textStyle="bold" />
 
-    <!-- ImageButton for Exit Confirmation -->
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/exitButton"
-        android:layout_width="300dp"
-        android:padding="7dp"
-        android:background="@drawable/button_background"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="10dp"
-        app:backgroundTint="@color/white"
-        android:scaleType="fitCenter"
-        android:text="Hoàn Thành"
-        android:textStyle="bold"
-        android:textColor="@color/textColor"
-        android:contentDescription="Exit Button"
-        android:textSize="24sp"
-        android:layout_below="@+id/listView"
-        tools:ignore="SpeakableTextPresentCheck" />
+        <!-- ListView Section -->
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="*Chọn thí sinh để quét bài thi"
-        android:gravity="center"
-    android:textSize="16sp"
-        android:layout_below="@+id/exitButton"
-        />
-</RelativeLayout>
+        <!-- ImageButton for Exit Confirmation -->
+
+        <ListView
+            android:id="@+id/listView"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:divider="@color/white"
+            android:dividerHeight="8dp"
+            android:scrollbars="vertical"
+            tools:listitem="@layout/item_student" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/exitButton"
+            android:layout_width="300dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="16dp"
+            android:background="@drawable/button_background"
+            android:contentDescription="Exit Button"
+            android:padding="7dp"
+            android:scaleType="fitCenter"
+            android:text="Hoàn Thành"
+            android:textColor="@color/textColor"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            app:backgroundTint="@color/white"
+            tools:ignore="SpeakableTextPresentCheck" />
+
+        <!-- Description TextView -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="*Chọn thí sinh để quét bài thi"
+            android:textSize="16sp" />
+    </LinearLayout>
+
+</HorizontalScrollView>

@@ -9,4 +9,5 @@
     <color name="studentName">#B7B7B7</color>
     <color name="backgroundCardView">#B7B7B7</color>
     <color name="backgroundBlur">#FEFFFF</color>
+    <color name="appBarText">#707070</color>
 </resources>

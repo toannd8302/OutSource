@@ -25,8 +25,10 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
@@ -57,63 +59,82 @@ public class StudentListActivity extends AppCompatActivity {
     private String examCode;
     private String email;
     private String testDescription;
-    private String studentName; // Tên học sinh được chọn truyền qua activity ImageHandlingActivity
-    private String examMarkId; // ID của bài thi được chọn truyền qua activity ImageHandlingActivity
-
-    private String studentId; // ID của học sinh được chọn truyền qua activity ImageHandlingActivity
+    private String studentName;
+    private String examMarkId;
+    private String studentId;
     private String currentPhotoPath;
     private static final int CAMERA_PERMISSION_REQUEST_CODE = 100;
     private static final int CAMERA_REQUEST_CODE = 101;
     private static final int DISPLAY_IMAGE_REQUEST_CODE = 102;
-
     private TextView headerTextView;
     private boolean stateColor = false;
     private Button exitButton;
+    private Intent intent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_student_list);
-
+        setupActionBar(); // Thiết lập action bar
         headerTextView = findViewById(R.id.headerTextView);
         exitButton = findViewById(R.id.exitButton);
-
         Intent intent = getIntent();
         if (intent != null) {
             examCode = intent.getStringExtra("examCode");
             email = intent.getStringExtra("email");
             stateColor = intent.getBooleanExtra("changeStateColor", false);
             Log.d("StudentListActivity", "stateColor: " + stateColor);
-
             Log.d("StudentListActivity", "Test Code: " + examCode);
             Log.d("StudentListActivity", "Email: " + email);
-
-            ApiInterface apiInterface = RetrofitClient.getClient().create(ApiInterface.class);
-            Call<StudentInfoApiResponse> call = apiInterface.getStudentInfo(examCode, email);
-            call.enqueue(new Callback<StudentInfoApiResponse>() {
-                @Override
-                public void onResponse(Call<StudentInfoApiResponse> call, Response<StudentInfoApiResponse> response) {
-                    if (response.isSuccessful() && response.body() != null) {
-                        StudentInfoApiResponse studentInfoApiResponse = response.body();
-                        Log.d("StudentListActivity", "API Response: " + studentInfoApiResponse.toString());
-                        List<StudentInfo> studentList = studentInfoApiResponse.getStudentInExam();
-                        testDescription = studentInfoApiResponse.getDescriptionOfTest();
-                        headerTextView.setText(testDescription);
-                        showStudentList(studentList);
-                    } else {
-                        Toast.makeText(StudentListActivity.this, "Đã xảy ra lỗi", Toast.LENGTH_SHORT).show();
-                    }
-                }
-
-                @Override
-                public void onFailure(Call<StudentInfoApiResponse> call, Throwable t) {
-                    Toast.makeText(StudentListActivity.this, "Đã xảy ra lỗi" + t, Toast.LENGTH_SHORT).show();
-                    Log.e("StudentListActivity", "Lỗi: " + t);
-                }
-            });
+            callApiShowStudentList();//Gọi API để hiển thị danh sách học sinh
         }
 
         exitButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showExitConfirmationDialog();
+            }
+        });
+    }
+
+    private void callApiShowStudentList() {
+        ApiInterface apiInterface = RetrofitClient.getClient().create(ApiInterface.class);
+        Call<StudentInfoApiResponse> call = apiInterface.getStudentInfo(examCode, email);
+        call.enqueue(new Callback<StudentInfoApiResponse>() {
+            @Override
+            public void onResponse(Call<StudentInfoApiResponse> call, Response<StudentInfoApiResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    StudentInfoApiResponse studentInfoApiResponse = response.body();
+                    Log.d("StudentListActivity", "API Response: " + studentInfoApiResponse.toString());
+                    List<StudentInfo> studentList = studentInfoApiResponse.getStudentInExam();
+                    testDescription = studentInfoApiResponse.getDescriptionOfTest();
+                    headerTextView.setText(testDescription);
+                    showStudentList(studentList);
+                } else {
+                    Toast.makeText(StudentListActivity.this, "Đã xảy ra lỗi", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<StudentInfoApiResponse> call, Throwable t) {
+                Toast.makeText(StudentListActivity.this, "Đã xảy ra lỗi" + t, Toast.LENGTH_SHORT).show();
+                Log.e("StudentListActivity", "Lỗi: " + t);
+            }
+        });
+    }
+
+    private void setupActionBar() {
+        Toolbar appBar = findViewById(R.id.appbar);
+        TextView title = appBar.findViewById(R.id.txtAppBarTitle);
+        title.setText("Quay lại");
+        setSupportActionBar(appBar);
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+            actionBar.setDisplayShowHomeEnabled(true); //Hiển thị nút back
+            actionBar.setDisplayShowTitleEnabled(false);//Ẩn tiêu đề của action bar
+        }
+        appBar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 showExitConfirmationDialog();
@@ -129,7 +150,7 @@ public class StudentListActivity extends AppCompatActivity {
         StudentListAdapter adapter = new StudentListAdapter(this, studentList);
         listView.setAdapter(adapter);
         if (stateColor) {
-           //Thqau màu cho relative layout
+            //Thqau màu cho relative layout
             RelativeLayout relativeLayoutStudent = findViewById(R.id.relativeLayoutStudent);
             // Kiểm tra xem relativeLayoutStudent không phải là null trước khi thiết lập màu nền
             if (relativeLayoutStudent != null) {
@@ -155,17 +176,18 @@ public class StudentListActivity extends AppCompatActivity {
                 Log.d("StudentListActivity", "Exam Mark Id: " + examMarkId);
                 studentId = selectedStudent.getStudentId();
                 Log.d("StudentListActivity", "Student Id: " + studentId);
-                    Intent intent = new Intent(StudentListActivity.this, ImageHandlingActivity.class);
-                    intent.putExtra("studentName", studentName);
-                    intent.putExtra("examMarkId", examMarkId);
-                    intent.putExtra("examCode", examCode);
-                    intent.putExtra("email", email);
-                    intent.putExtra("testDescription", testDescription);
+                Intent intent = new Intent(StudentListActivity.this, ImageHandlingActivity.class);
+                intent.putExtra("studentName", studentName);
+                intent.putExtra("examMarkId", examMarkId);
+                intent.putExtra("examCode", examCode);
+                intent.putExtra("email", email);
+                intent.putExtra("testDescription", testDescription);
                 Toast.makeText(StudentListActivity.this, "Chọn học sinh: " + studentName, Toast.LENGTH_SHORT).show();
                 checkCameraPermissionAndOpenCamera(selectedStudent);
             }
         });
     }
+
     @Override
     protected void onResume() {
         super.onResume();
@@ -197,6 +219,7 @@ public class StudentListActivity extends AppCompatActivity {
                     Toast.makeText(StudentListActivity.this, "Đã xảy ra lỗi", Toast.LENGTH_SHORT).show();
                 }
             }
+
             @Override
             public void onFailure(Call<StudentInfoApiResponse> call, Throwable t) {
                 Toast.makeText(StudentListActivity.this, "Đã xảy ra lỗi" + t, Toast.LENGTH_SHORT).show();
@@ -204,6 +227,7 @@ public class StudentListActivity extends AppCompatActivity {
             }
         });
     }
+
     private void checkCameraPermissionAndOpenCamera(StudentInfo selectedStudent) {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
             openCamera(selectedStudent);
@@ -211,9 +235,11 @@ public class StudentListActivity extends AppCompatActivity {
             requestCameraPermission();
         }
     }
+
     private void requestCameraPermission() {
         ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, CAMERA_PERMISSION_REQUEST_CODE);
     }
+
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -249,6 +275,7 @@ public class StudentListActivity extends AppCompatActivity {
             Toast.makeText(this, "Không thể mở camera", Toast.LENGTH_SHORT).show();
         }
     }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
