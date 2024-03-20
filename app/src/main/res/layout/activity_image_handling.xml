@@ -14,7 +14,7 @@
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="1.0">
+        app:layout_constraintVertical_bias="0.0">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/parentLayout"
@@ -22,17 +22,19 @@
             android:layout_height="wrap_content">
 
             <!-- ImageView -->
+
+
+
             <ImageView
                 android:id="@+id/imageViewResponse"
                 android:layout_width="200dp"
                 android:layout_height="wrap_content"
                 android:adjustViewBounds="true"
-                android:visibility="visible"
                 android:scaleType="fitStart"
+                android:visibility="visible"
                 app:layout_constraintEnd_toStartOf="@+id/llMain"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
-
             <!-- LinearLayout để chứa các cặp TextView và Spinner -->
             <LinearLayout
                 android:id="@+id/llMain"
@@ -42,20 +44,14 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/imageViewResponse"
                 app:layout_constraintTop_toTopOf="parent" />
-            <!-- LinearLayout để chứa các cặp TextView và Spinner -->
-            <!-- LinearLayout cuối cùng -->
-
             <ProgressBar
                 android:id="@+id/progressBarResult"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:visibility="gone"
+                android:visibility="visible"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.498"
                 app:layout_constraintStart_toStartOf="parent" />
-
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </ScrollView>
@@ -64,59 +60,96 @@
         android:id="@+id/llBottom"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-
-
         android:background="@color/white"
         android:elevation="10dp"
         android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="@id/scrollView"
-        app:layout_constraintStart_toStartOf="@id/scrollView">
+        app:layout_constraintStart_toStartOf="@id/scrollView"
 
+        >
 
-        <TextView
-            android:id="@+id/tvStudentName"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Họ và tên" />
-
-        <TextView
-            android:id="@+id/tvStudentNo"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Mã HS:" />
-
-        <TextView
-            android:id="@+id/tvPaperCode"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Mã đề thi" />
-
-        <androidx.constraintlayout.widget.ConstraintLayout
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="30dp"
+            android:orientation="vertical">
 
-
-            <Button
-                android:id="@+id/btnSubmit"
+            <TextView
+                android:id="@+id/tvStudentName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Lưu"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintStart_toEndOf="@+id/btnBackCam"
-                tools:layout_editor_absoluteY="3dp" />
+                android:layout_marginStart="30dp"
+                android:textColor="@color/textColor"
+                android:text="Họ và tên"
+                android:textStyle="bold"
+                android:layout_marginBottom="10dp"
+                />
 
-            <Button
-                android:id="@+id/btnBackCam"
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                >
+                <TextView
+                    android:id="@+id/tvStudentNo"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/textColor"
+                    android:layout_marginStart="20dp"
+                    android:textStyle="bold"
+                    android:text="Mã HS:" />
+
+                <TextView
+                    android:textStyle="bold"
+                    android:id="@+id/tvPaperCode"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="20dp"
+                    android:textColor="@color/textColor"
+                    android:text="Mã đề thi" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            >
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnBack"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="40dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginBottom="16dp"
+                android:backgroundTint="@color/white"
                 android:text="Quét lại"
-                app:layout_constraintEnd_toStartOf="@+id/btnSubmit"
-                app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintStart_toStartOf="parent"
-                tools:layout_editor_absoluteY="1dp" />
-        </androidx.constraintlayout.widget.ConstraintLayout>
+                android:textStyle="bold"
+                android:textColor="@color/design_default_color_error"
+                app:strokeColor="@color/backgroundCardView"
+                app:strokeWidth="1dp" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnSummit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="50dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="48dp"
+                android:textStyle="bold"
+                android:paddingLeft="20dp"
+                android:paddingRight="20dp"
+                android:layout_toEndOf="@+id/btnBack"
+                android:text="Lưu"
+
+                android:textColor="@color/backgroundButton"
+                app:backgroundTint="@color/white"
+                app:cornerRadius="50dp"
+                app:strokeColor="@color/backgroundCardView"
+                app:strokeWidth="1dp" />
+        </RelativeLayout>
+
 
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

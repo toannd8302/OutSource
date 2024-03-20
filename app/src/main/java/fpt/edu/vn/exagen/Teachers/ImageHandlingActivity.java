@@ -82,8 +82,8 @@ public class ImageHandlingActivity extends AppCompatActivity {
         tvStudentName = findViewById(R.id.tvStudentName);
         tvStudentNo = findViewById(R.id.tvStudentNo);
         tvPaperCode = findViewById(R.id.tvPaperCode);
-        btnSubmit = findViewById(R.id.btnSubmit);
-        btnBack = findViewById(R.id.btnBackCam);
+        btnSubmit = findViewById(R.id.btnSummit);
+        btnBack = findViewById(R.id.btnBack);
         progressBarResult = findViewById(R.id.progressBarResult);
         Intent intent = getIntent();
         if (intent != null) {
@@ -100,6 +100,8 @@ public class ImageHandlingActivity extends AppCompatActivity {
                 Toast.makeText(this, "ImagePath rỗng", Toast.LENGTH_SHORT).show();
             }
             tvStudentName.setText("Họ và Tên: " + name);
+            tvStudentName.setTextColor(getResources().getColor(R.color.textColor));
+            tvStudentName.setTypeface(null, Typeface.BOLD);
         }
         btnSubmit.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -108,7 +110,6 @@ public class ImageHandlingActivity extends AppCompatActivity {
                 sendResultToApi(resultStringResponse);
             }
         });
-
         btnBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -154,8 +155,6 @@ public class ImageHandlingActivity extends AppCompatActivity {
         Log.d("ImageHandlingActivity", "jsonObjec: " + jsonObject.toString());
         ApiInterface apiInterface = RetrofitClient.getClient().create(ApiInterface.class);
         Call<Double> call = apiInterface.saveResult(jsonObject);
-
-
         call.enqueue(new Callback<Double>() {
             @Override
             public void onResponse(Call<Double> call, Response<Double> response) {
@@ -189,10 +188,15 @@ public class ImageHandlingActivity extends AppCompatActivity {
         SendRequestTasks.SendRequestListener listener = new SendRequestTasks.SendRequestListener() {
             @Override
             public void onRequestSuccess(ApiResponse response) {
+                progressBarResult.setVisibility(View.VISIBLE);
                 handleResponse(response);
                 tvStudentNo.setText("Mã HS: " + studentNo);
+                tvStudentNo.setTextColor(getResources().getColor(R.color.textColor));
+                tvStudentNo.setTypeface(null, Typeface.BOLD);
                 Log.d("ImageHandlingActivity", "studentNo: " + studentNo);
                 tvPaperCode.setText("Mã đề thi: " + paperCode);
+                tvPaperCode.setTextColor(getResources().getColor(R.color.textColor));
+                tvPaperCode.setTypeface(null, Typeface.BOLD);
                 Log.d("ImageHandlingActivity", "paperCode: " + paperCode);
             }
 
@@ -225,54 +229,67 @@ public class ImageHandlingActivity extends AppCompatActivity {
     }
 
     private void displayImageViewAndSpinner() {
-        progressBarResult.setVisibility(View.VISIBLE);
-        // Xử lý chuỗi kết quả từ API
-        ArrayList<Object[]> answers = stringProcessing(resultStringResponse);
-        ArrayList<Integer> numberString = new ArrayList<>();
-        ArrayList<Character> itemsAnswers = new ArrayList<>();
-        for (Object[] answer : answers) {
-            Log.d("Answer", "Answer: " + Arrays.toString(answer));
-            numberString.add((Integer) answer[0]);
-            Log.d("NumberString", "NumberString: " + numberString);
 
-            char firstChar = answer[1].toString().charAt(0);
-            Log.d("FirstChar", "FirstChar: " + firstChar);
-            itemsAnswers.add(firstChar);
+        try {
+
+            // Xử lý chuỗi kết quả từ API
+            ArrayList<Object[]> answers = stringProcessing(resultStringResponse);
+            ArrayList<Integer> numberString = new ArrayList<>();
+            ArrayList<Character> itemsAnswers = new ArrayList<>();
+            for (Object[] answer : answers) {
+                Log.d("Answer", "Answer: " + Arrays.toString(answer));
+                numberString.add((Integer) answer[0]);
+                Log.d("NumberString", "NumberString: " + numberString);
+
+                char firstChar = answer[1].toString().charAt(0);
+                Log.d("FirstChar", "FirstChar: " + firstChar);
+                itemsAnswers.add(firstChar);
+            }
+            ConstraintLayout constraintLayout = findViewById(R.id.parentLayout);
+            // Tạo LinearLayout mới để chứa các cặp TextView và Spinner
+            LinearLayout llMain = findViewById(R.id.llMain);
+            if (llMain.getParent() != null) { // Remove the view if it already exists
+                ((ViewGroup) llMain.getParent()).removeView(llMain);
+            } else {
+                llMain = new LinearLayout(this);
+            }
+
+            llMain.setOrientation(LinearLayout.VERTICAL);
+            ImageView imageView = findViewById(R.id.imageViewResponse);
+            imageView.setImageBitmap(receivedBitmap);
+            for (int i = 0; i < numberString.size(); i++) {
+                LinearLayout rowLayout = new LinearLayout(this);
+                rowLayout.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+                rowLayout.setOrientation(LinearLayout.HORIZONTAL);
+                LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.MATCH_PARENT,
+                        LinearLayout.LayoutParams.WRAP_CONTENT
+                );
+                int leftMargin = 20;
+                int topMargin = 10;
+                int rightMargin = 20;
+                int bottomMargin = 10;
+                layoutParams.setMargins(leftMargin, topMargin, rightMargin, bottomMargin);
+                rowLayout.setLayoutParams(layoutParams);
+                TextView textView = new TextView(this);
+                textView.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+                textView.setPadding(10, 0, 10, 0);
+                textView.setText(String.valueOf(i + 1) + ".");
+                rowLayout.addView(textView);
+                TextView textView1 = new TextView(this);
+                textView1.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+                textView1.setPadding(10, 0, 10, 0);
+                textView1.setText(itemsAnswers.get(i).toString());
+                rowLayout.addView(textView1);
+                llMain.addView(rowLayout);
+            }
+            constraintLayout.addView(llMain);
+            progressBarResult.setVisibility(View.GONE);
+        } catch (Exception e) {
+            e.printStackTrace();
+            Toast.makeText(this, "Lỗi: " + e, Toast.LENGTH_SHORT).show();
+            progressBarResult.setVisibility(View.GONE);
         }
-        ConstraintLayout constraintLayout = findViewById(R.id.parentLayout);
-        // Tạo LinearLayout mới để chứa các cặp TextView và Spinner
-        LinearLayout llMain = findViewById(R.id.llMain);
-        llMain.setOrientation(LinearLayout.VERTICAL);
-        ImageView imageView = findViewById(R.id.imageViewResponse);
-        imageView.setImageBitmap(receivedBitmap);
-        for (int i = 0; i < numberString.size(); i++) {
-            LinearLayout rowLayout = new LinearLayout(this);
-            rowLayout.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-            rowLayout.setOrientation(LinearLayout.HORIZONTAL);
-            LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
-                    LinearLayout.LayoutParams.MATCH_PARENT,
-                    LinearLayout.LayoutParams.WRAP_CONTENT
-            );
-            int leftMargin = 20;
-            int topMargin = 10;
-            int rightMargin = 20;
-            int bottomMargin = 10;
-            layoutParams.setMargins(leftMargin, topMargin, rightMargin, bottomMargin);
-            rowLayout.setLayoutParams(layoutParams);
-            TextView textView = new TextView(this);
-            textView.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-            textView.setPadding(10, 0, 10, 0);
-            textView.setText(String.valueOf(i + 1) + ".");
-            rowLayout.addView(textView);
-            TextView textView1 = new TextView(this);
-            textView1.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-            textView1.setPadding(10, 0, 10, 0);
-            textView1.setText(itemsAnswers.get(i).toString());
-            rowLayout.addView(textView1);
-            llMain.addView(rowLayout);
-        }
-        constraintLayout.addView(llMain);
-        progressBarResult.setVisibility(View.GONE);
     }
 
     private void showResult(boolean showResult) {
