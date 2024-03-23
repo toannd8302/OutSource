@@ -48,15 +48,14 @@ public class StudentListViewAdapter extends ArrayAdapter<StudentInfo>{
 
         StudentInfo studentInfo = studentList.get(position);
 
-        // Thiết lập màu nền cho RelativeLayout nếu cần
         if (stateColor) {
             viewHolder.relativeLayoutStudent.setBackgroundColor(ContextCompat.getColor(context, fpt.edu.vn.exagen.R.color.backgroundButton));
         }
 
-        // Thiết lập drawable cho CheckBox nếu cần
+
         viewHolder.checkBox.setButtonDrawable(R.drawable.custom_checkbox);
 
-        // Thiết lập thông tin sinh viên
+
         viewHolder.studentInfoName.setText(studentInfo.getStudentName());
         viewHolder.studentInfoNo.setText(studentInfo.getNo());
 

@@ -9,6 +9,7 @@ import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -28,6 +29,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import fpt.edu.vn.exagen.APIService.ApiInterface;
 import fpt.edu.vn.exagen.APIService.ApiResponse;
@@ -35,6 +37,7 @@ import fpt.edu.vn.exagen.APIService.RetrofitClient;
 import fpt.edu.vn.exagen.APIService.SendRequestTasks;
 import fpt.edu.vn.exagen.R;
 import fpt.edu.vn.exagen.Students.ImageDisplayActivity;
+import fpt.edu.vn.exagen.adapter.AnswerSpinnerAdapter;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -130,7 +133,7 @@ public class ImageHandlingActivity extends AppCompatActivity {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            sendRequestToApi(base64Image);
+                            sendRequestBase64Image(base64Image);
                         }
                     });
                 } else {
@@ -182,9 +185,8 @@ public class ImageHandlingActivity extends AppCompatActivity {
     }
 
 
-    private void sendRequestToApi(String base64Image) {
+    private void sendRequestBase64Image(String base64Image) {
         ApiInterface apiInterface = RetrofitClient.getClient().create(ApiInterface.class);
-
         SendRequestTasks.SendRequestListener listener = new SendRequestTasks.SendRequestListener() {
             @Override
             public void onRequestSuccess(ApiResponse response) {
@@ -248,7 +250,7 @@ public class ImageHandlingActivity extends AppCompatActivity {
             ConstraintLayout constraintLayout = findViewById(R.id.parentLayout);
             // Tạo LinearLayout mới để chứa các cặp TextView và Spinner
             LinearLayout llMain = findViewById(R.id.llMain);
-            if (llMain.getParent() != null) { // Remove the view if it already exists
+            if (llMain.getParent() != null) { // Xóa LinearLayout cũ nếu đã tồn tại
                 ((ViewGroup) llMain.getParent()).removeView(llMain);
             } else {
                 llMain = new LinearLayout(this);
@@ -266,21 +268,41 @@ public class ImageHandlingActivity extends AppCompatActivity {
                         LinearLayout.LayoutParams.WRAP_CONTENT
                 );
                 int leftMargin = 20;
-                int topMargin = 10;
+                int topMargin = 5;
                 int rightMargin = 20;
-                int bottomMargin = 10;
+                int bottomMargin = 5;
                 layoutParams.setMargins(leftMargin, topMargin, rightMargin, bottomMargin);
                 rowLayout.setLayoutParams(layoutParams);
                 TextView textView = new TextView(this);
-                textView.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+                textView.setLayoutParams(new LinearLayout.LayoutParams(
+                        ViewGroup.LayoutParams.WRAP_CONTENT,
+                        ViewGroup.LayoutParams.WRAP_CONTENT)
+
+                );
                 textView.setPadding(10, 0, 10, 0);
                 textView.setText(String.valueOf(i + 1) + ".");
+                textView.setTypeface(null, Typeface.BOLD);
                 rowLayout.addView(textView);
-                TextView textView1 = new TextView(this);
-                textView1.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-                textView1.setPadding(10, 0, 10, 0);
-                textView1.setText(itemsAnswers.get(i).toString());
-                rowLayout.addView(textView1);
+                Spinner spinner = new Spinner(this);
+                spinner.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+                spinner.setAdapter(new AnswerSpinnerAdapter(this, R.layout.item_answers, itemsAnswers, itemsAnswers.get(i).charValue()));
+                Log.d("SelectedAnswer", "SelectedAnswer1: " + itemsAnswers.get(i));
+                if (itemsAnswers.get(i) == 'A') {
+                    spinner.setSelection(0);
+                } else if (itemsAnswers.get(i) == 'B') {
+                    spinner.setSelection(1);
+                } else if (itemsAnswers.get(i) == 'C') {
+                    spinner.setSelection(2);
+                } else if (itemsAnswers.get(i) == 'D') {
+                    spinner.setSelection(3);
+                } else {
+                    spinner.setSelection(0);
+                }
+                //Cứ cách 5 câu hỏi thì margin bottom = 20
+                if (i != 0 && (i + 1) % 5 == 0) {
+                    layoutParams.setMargins(leftMargin, topMargin, rightMargin, 24);
+                }
+                rowLayout.addView(spinner);
                 llMain.addView(rowLayout);
             }
             constraintLayout.addView(llMain);
@@ -319,14 +341,12 @@ public class ImageHandlingActivity extends AppCompatActivity {
 
     }
 
-
     //xử lí chuỗi kết quả từ API
     private static ArrayList<Object[]> stringProcessing(String resultStringResponse) {
-        // Kiểm tra và loại bỏ dấu | cuối cùng nếu có
+        // Kiểm tra và loại bỏ dấu | cuối cùng
         if (resultStringResponse.endsWith("|")) {
             resultStringResponse = resultStringResponse.substring(0, resultStringResponse.length() - 1);
         }
-
         String[] parts = resultStringResponse.split("\\|");
         ArrayList<Object[]> arraysList = new ArrayList<>();
 
