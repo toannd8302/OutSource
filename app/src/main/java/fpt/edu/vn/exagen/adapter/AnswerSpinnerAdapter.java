@@ -29,7 +29,9 @@ public class AnswerSpinnerAdapter extends ArrayAdapter<Character> {
         Character answer = getItem(position);
         if (answer != null) {
             tvSelected.setText(answer.toString());
-            tvSelected.setTextColor(parent.getResources().getColor(com.google.android.material.R.color.primary_material_light));
+            tvSelected.setTypeface(null, Typeface.BOLD);
+           //Mau chu
+            tvSelected.setTextColor(parent.getContext().getResources().getColor(R.color.textColor));
         }
 
 
@@ -51,7 +53,7 @@ public class AnswerSpinnerAdapter extends ArrayAdapter<Character> {
         }
 
         if (answer != null && answer != selectedAnswer) {
-            tvCategory.setTextColor(parent.getResources().getColor(com.google.android.material.R.color.design_default_color_error));
+            tvCategory.setTextColor(parent.getContext().getResources().getColor(R.color.red));
             tvCategory.setTypeface(null, Typeface.BOLD);
         }
         return convertView;

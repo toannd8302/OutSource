@@ -5,10 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/background_linear_gradient"
-    android:orientation="vertical"
     android:fillViewport="true"
-
-    >
+    android:orientation="vertical">
 
     <!-- Linear Layout for vertical orientation -->
     <LinearLayout
@@ -26,13 +24,12 @@
             android:id="@+id/headerTextView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="30dp"
             android:background="@drawable/button_background"
             android:elevation="10dp"
-
             android:padding="16dp"
             android:textColor="@color/black"
             android:textSize="18sp"
-            android:layout_marginBottom="30dp"
             android:textStyle="bold" />
 
         <!-- ListView Section -->

@@ -47,7 +47,7 @@ public class ImageHandlingActivity extends AppCompatActivity {
     private ImageView imageViewResponse;
     private Bitmap receivedBitmap;
     private Button btnSubmit, btnBack;
-    private TextView tvTestDescription, tvStudentName, tvExamCode;
+    private TextView tvStudentName;
     private String studentNo;
     private String examMarkId;
     private int paperCode;
@@ -69,13 +69,15 @@ public class ImageHandlingActivity extends AppCompatActivity {
     private String resultStringResponseString;
     private String examCodeString;
     private String emailString;
+
+    String studentNoFromSudentList;
     private ArrayList<Integer> numberString;
 
     private ArrayList<Character> itemsAnswers;
 
-    private Button btnSubmitButton, btnBackButton;
     private TextView tvStudentNo, tvStudentNameTextView, tvPaperCode;
-    private ProgressBar progressBarResult;
+    private ProgressBar progressBarResult, progressBarStudentNo, progressBarPaperCode;
+    Character selectedAnswer;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -88,6 +90,8 @@ public class ImageHandlingActivity extends AppCompatActivity {
         btnSubmit = findViewById(R.id.btnSummit);
         btnBack = findViewById(R.id.btnBack);
         progressBarResult = findViewById(R.id.progressBarResult);
+        progressBarStudentNo = findViewById(R.id.progressBarStudentNo);
+        progressBarPaperCode = findViewById(R.id.progressBarPaperCode);
         Intent intent = getIntent();
         if (intent != null) {
             String imagePath = intent.getStringExtra(ImageDisplayActivity.EXTRA_IMAGE_PATH);
@@ -95,8 +99,9 @@ public class ImageHandlingActivity extends AppCompatActivity {
             examCode = intent.getStringExtra("examCode");
             String testDescription = intent.getStringExtra("testDescription");
             examMarkId = intent.getStringExtra("examMarkId");
+            Log.d("ImageHandlingActivity", "examMarkId: " + examMarkId);
             String name = intent.getStringExtra("studentName");
-
+            studentNoFromSudentList = intent.getStringExtra("studentNo");
             if (imagePath != null) {
                 displayImageAndBase64(imagePath);
             } else {
@@ -122,6 +127,7 @@ public class ImageHandlingActivity extends AppCompatActivity {
         });
     }
 
+    // Hiển thị ảnh và mã học sinh, mã đề thi
     private void displayImageAndBase64(final String imagePath) {
         Thread thread = new Thread(new Runnable() {
             @Override
@@ -137,7 +143,7 @@ public class ImageHandlingActivity extends AppCompatActivity {
                         }
                     });
                 } else {
-                    runOnUiThread(new Runnable() {
+                    runOnUiThread(new Runnable() { // Hiển thị thông báo nếu imagePath không tồn tại
                         @Override
                         public void run() {
                             Toast.makeText(ImageHandlingActivity.this, "imagePath không tồn tại", Toast.LENGTH_SHORT).show();
@@ -150,6 +156,7 @@ public class ImageHandlingActivity extends AppCompatActivity {
     }
 
     private void sendResultToApi(String answer) {
+
         // Tạo JSON Object để chứa dữ liệu cần gửi đến API
         JsonObject jsonObject = new JsonObject();
         jsonObject.addProperty("paperCode", paperCode);
@@ -186,20 +193,40 @@ public class ImageHandlingActivity extends AppCompatActivity {
 
 
     private void sendRequestBase64Image(String base64Image) {
+
         ApiInterface apiInterface = RetrofitClient.getClient().create(ApiInterface.class);
         SendRequestTasks.SendRequestListener listener = new SendRequestTasks.SendRequestListener() {
             @Override
             public void onRequestSuccess(ApiResponse response) {
                 progressBarResult.setVisibility(View.VISIBLE);
+                progressBarStudentNo.setVisibility(View.VISIBLE);
+                progressBarPaperCode.setVisibility(View.VISIBLE);
                 handleResponse(response);
-                tvStudentNo.setText("Mã HS: " + studentNo);
-                tvStudentNo.setTextColor(getResources().getColor(R.color.textColor));
-                tvStudentNo.setTypeface(null, Typeface.BOLD);
-                Log.d("ImageHandlingActivity", "studentNo: " + studentNo);
-                tvPaperCode.setText("Mã đề thi: " + paperCode);
-                tvPaperCode.setTextColor(getResources().getColor(R.color.textColor));
-                tvPaperCode.setTypeface(null, Typeface.BOLD);
-                Log.d("ImageHandlingActivity", "paperCode: " + paperCode);
+                // Hiển thị mã học sinh và mã đề thi
+                try {
+                    if (studentNo.equals(studentNoFromSudentList)) {
+                        tvStudentNo.setText("Mã học sinh: " + studentNo);
+                        tvStudentNo.setTextColor(getResources().getColor(R.color.textColor));
+                        tvStudentNo.setTypeface(null, Typeface.BOLD);
+                    } else {
+                        tvStudentNo.setText("Mã học sinh không khớp ");
+                        tvStudentNo.setTextColor(getResources().getColor(R.color.red));
+                        tvStudentNo.setTypeface(null, Typeface.BOLD);
+                        tvStudentNo.setTextSize(13);
+                        Toast.makeText(ImageHandlingActivity.this, "Mã học sinh không trùng khớp", Toast.LENGTH_SHORT).show();
+                        Log.d("ImageHandlingActivity", "studentNo: " + studentNo);
+                    }
+                    Log.d("ImageHandlingActivity", "studentNo: " + studentNo);
+                    tvPaperCode.setText("Mã đề thi: " + paperCode);
+                    tvPaperCode.setTextColor(getResources().getColor(R.color.textColor));
+                    tvPaperCode.setTypeface(null, Typeface.BOLD);
+                    Log.d("ImageHandlingActivity", "paperCode: " + paperCode);
+                    progressBarStudentNo.setVisibility(View.GONE);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    Toast.makeText(ImageHandlingActivity.this, "Lỗi: " + e, Toast.LENGTH_SHORT).show();
+                    progressBarResult.setVisibility(View.GONE);
+                }
             }
 
             @Override
@@ -207,6 +234,8 @@ public class ImageHandlingActivity extends AppCompatActivity {
                 Toast.makeText(ImageHandlingActivity.this, "Failed to send request to API", Toast.LENGTH_SHORT).show();
                 Log.e("Error", "Failed to send request to API");
                 onBackPressed();
+                progressBarStudentNo.setVisibility(View.GONE);
+                progressBarPaperCode.setVisibility(View.GONE);
             }
         };
 
@@ -259,7 +288,7 @@ public class ImageHandlingActivity extends AppCompatActivity {
             llMain.setOrientation(LinearLayout.VERTICAL);
             ImageView imageView = findViewById(R.id.imageViewResponse);
             imageView.setImageBitmap(receivedBitmap);
-            for (int i = 0; i < numberString.size(); i++) {
+            for ( int  i = 0; i < numberString.size(); i++) {
                 LinearLayout rowLayout = new LinearLayout(this);
                 rowLayout.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
                 rowLayout.setOrientation(LinearLayout.HORIZONTAL);
@@ -282,6 +311,7 @@ public class ImageHandlingActivity extends AppCompatActivity {
                 textView.setPadding(10, 0, 10, 0);
                 textView.setText(String.valueOf(i + 1) + ".");
                 textView.setTypeface(null, Typeface.BOLD);
+                textView.setTextColor(getResources().getColor(R.color.textColor));
                 rowLayout.addView(textView);
                 Spinner spinner = new Spinner(this);
                 spinner.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
@@ -300,30 +330,48 @@ public class ImageHandlingActivity extends AppCompatActivity {
                 }
                 //Cứ cách 5 câu hỏi thì margin bottom = 20
                 if (i != 0 && (i + 1) % 5 == 0) {
-                    layoutParams.setMargins(leftMargin, topMargin, rightMargin, 24);
+                    layoutParams.setMargins(leftMargin, topMargin, rightMargin, 20);
                 }
+
+                Log.d("SelectedAnswer", "SelectedAnswerBeforeSubmit: " + selectedAnswer);
+                spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                    @Override
+                    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                      // Lấy giá trị được chọn từ Spinner
+                        Character selectedAnswer = (Character) parent.getItemAtPosition(position);
+                        Log.d("SelectedAnswer", "SelectedAnswerAfterSubmit: " + selectedAnswer);
+
+                        // Thêm đáp án được chọn vào danh sách dựa theo vị trí của Spinner
+                        itemsAnswers.set(position, selectedAnswer);
+
+                        // Hiển thị thông tin debug
+                        Log.d("SelectedAnswer", "SelectedAnswer: " + selectedAnswer);
+                        Log.d("Position", "Position: " + position);
+                        Log.d("SelectedAnswer", "SelectedAnswerListUpdate: " + itemsAnswers);
+
+
+                    }
+
+                    @Override
+                    public void onNothingSelected(AdapterView<?> parent) {
+                    }
+                });
                 rowLayout.addView(spinner);
                 llMain.addView(rowLayout);
             }
             constraintLayout.addView(llMain);
             progressBarResult.setVisibility(View.GONE);
+            progressBarStudentNo.setVisibility(View.GONE);
+            progressBarPaperCode.setVisibility(View.GONE);
         } catch (Exception e) {
             e.printStackTrace();
             Toast.makeText(this, "Lỗi: " + e, Toast.LENGTH_SHORT).show();
             progressBarResult.setVisibility(View.GONE);
+            progressBarStudentNo.setVisibility(View.GONE);
+            progressBarPaperCode.setVisibility(View.GONE);
         }
     }
 
-    private void showResult(boolean showResult) {
-        if (showResult) {
-            progressBarResult.setVisibility(View.GONE);
-            imageViewResponse.setVisibility(View.VISIBLE);
-
-        } else {
-            progressBarResult.setVisibility(View.VISIBLE);
-            imageViewResponse.setVisibility(View.GONE);
-        }
-    }
 
     private Bitmap decodeBase64ToImage(String base64Image) {
         byte[] decodedString = Base64.decode(base64Image, Base64.DEFAULT);
@@ -358,5 +406,4 @@ public class ImageHandlingActivity extends AppCompatActivity {
         }
         return arraysList;
     }
-
 }
