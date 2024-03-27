@@ -11,11 +11,11 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <!--  android:networkSecurityConfig="@xml/network_security_config"  tránh lỗi Khi sử dụng http từ android 9 -->
     <application
-        android:networkSecurityConfig="@xml/network_security_config"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
         android:icon="@drawable/big_logo_cutted"
         android:label="@string/app_name"
+        android:networkSecurityConfig="@xml/network_security_config"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Exagen"
@@ -30,21 +30,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".Teachers.ResultActivity"
-            android:exported="true" />
-        <activity
             android:name=".Teachers.StudentListActivity"
-            android:exported="true" />
-        <activity
-            android:name=".Teachers.TeacherMainActivity"
-            android:exported="true"
-            android:label="Teacher Main Activity" />
-        <activity
-            android:name=".Teachers.ScanExamActivity"
-            android:exported="true"
-            android:label="Scan Activity" />
-        <activity
-            android:name=".Teachers.CreateExamActivity"
             android:exported="true" />
         <activity
             android:name=".Students.ImageDisplayActivity"
@@ -52,8 +38,6 @@
         <activity
             android:name=".Teachers.ImageHandlingActivity"
             android:exported="true" />
-        />
-
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="fpt.edu.vn.exagen.fileprovider"

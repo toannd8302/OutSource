@@ -62,6 +62,8 @@ public class StudentListActivity extends AppCompatActivity {
     private String studentName;
     private String examMarkId;
     private String studentId;
+    private int studentNo;
+    private String studentNoString;
     private String currentPhotoPath;
     private static final int CAMERA_PERMISSION_REQUEST_CODE = 100;
     private static final int CAMERA_REQUEST_CODE = 101;
@@ -176,15 +178,17 @@ public class StudentListActivity extends AppCompatActivity {
                 Log.d("StudentListActivity", "Exam Mark Id: " + examMarkId);
                 studentId = selectedStudent.getStudentId();
                 Log.d("StudentListActivity", "Student Id: " + studentId);
-                int studentNo = selectedStudent.getNo();
-                Log.d("StudentListActivity", "Student No: " + studentNo);
+                 studentNo = selectedStudent.getNo();
+                studentNoString = String.valueOf(studentNo);
                 Intent intent = new Intent(StudentListActivity.this, ImageHandlingActivity.class);
                 intent.putExtra("studentName", studentName);
                 intent.putExtra("examMarkId", examMarkId);
                 intent.putExtra("examCode", examCode);
                 intent.putExtra("email", email);
                 intent.putExtra("testDescription", testDescription);
-                intent.putExtra("studentNo", studentNo);
+                intent.putExtra("studentId", studentId);
+                intent.putExtra("studentNo", studentNoString);
+                Log.d("StudentListActivity", "studentNoString: " + studentNoString);
                 Toast.makeText(StudentListActivity.this, "Chọn học sinh: " + studentName, Toast.LENGTH_SHORT).show();
                 checkCameraPermissionAndOpenCamera(selectedStudent);
             }
